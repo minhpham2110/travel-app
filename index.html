@@ -3,17 +3,17 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-  <title>Japan Tour 2026</title>
+  <title>Japan Winter Tour 2026</title>
   
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <meta name="apple-mobile-web-app-title" content="Japan 2026">
+  <meta name="apple-mobile-web-app-title" content="Japan Winter 2026">
 
   <!-- Thư viện SheetJS đọc file Excel -->
   <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 
   <style>
-    /* Nhúng font Aptos để hiển thị chuẩn trên cả iPhone và máy tính */
+    /* Nhúng font Aptos */
     @font-face {
       font-family: 'Aptos';
       src: local('Aptos'),
@@ -219,7 +219,7 @@
 
   <header>
     <div class="header-info">
-      <div class="header-title">CHUYẾN ĐI NHẬT BẢN 2026</div>
+      <div class="header-title">JAPAN WINTER TOUR 2026</div>
       <div class="sync-badge" id="syncStatus">Đã lưu trong máy ✓</div>
     </div>
     <button class="refresh-btn" onclick="syncOnline(true)">Cập nhật ⟳</button>
@@ -237,8 +237,8 @@
   <script>
     const LOCAL_FILE = "./japantour.xlsx";
     const SHAREPOINT_FILE = "https://bscvn-my.sharepoint.com/:x:/g/personal/minhpq_bsc_com_vn/IQCHNDjCKlC5S4w9i-w0x3OiAVVX9bXIhQsYTux5-12K7tg?e=Pbu1oa&download=1";
-    const CACHE_KEY = "japan_trip_last_saved_v5";
-    const USER_PHOTOS_KEY = "japan_trip_user_photos_v5";
+    const CACHE_KEY = "japan_trip_last_saved_v6";
+    const USER_PHOTOS_KEY = "japan_trip_user_photos_v6";
 
     let userPhotos = JSON.parse(localStorage.getItem(USER_PHOTOS_KEY) || "{}");
 
@@ -386,7 +386,7 @@
             tripData = parsed;
             localStorage.setItem(CACHE_KEY, JSON.stringify(parsed));
             renderUI();
-            badge.innerText = "Đã cập nhật mới nhất ✓";
+            badge.innerText = "Đã lưu bản mới nhất ✓";
             return;
           }
         } catch(err) {}
