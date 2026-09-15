@@ -9,7 +9,7 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="Japan Winter 2026">
 
-  <!-- Biểu tượng icon ứng dụng cập nhật sang sakura.jpg -->
+  <!-- Biểu tượng icon ứng dụng -->
   <link rel="apple-touch-icon" href="./sakura.jpg">
   <link rel="icon" type="image/jpeg" href="./sakura.jpg">
 
@@ -190,6 +190,7 @@
 
     .card-name { font-size: 15px; font-weight: 700; color: #1A202C; margin-bottom: 4px; line-height: 1.35; }
     
+    /* Description & Note styling */
     .card-desc { font-size: 13px; color: #4A5568; line-height: 1.45; word-break: break-word; }
     
     .card-note { 
@@ -208,18 +209,20 @@
     }
     .card-note a:active { opacity: 0.7; }
 
+    /* Khung ảnh tỷ lệ 1920x1080 (16:9), tự crop chuẩn */
     .card-img-wrapper {
       margin-top: 10px;
       border-radius: 10px;
       overflow: hidden;
-      max-height: 220px;
+      width: 100%;
+      aspect-ratio: 16 / 9;
       background: #ECEFF1;
     }
     .card-img {
       width: 100%;
       height: 100%;
-      max-height: 220px;
       object-fit: cover;
+      object-position: center;
       display: block;
     }
   </style>
@@ -256,7 +259,7 @@
           { "time": "00:55 - 08:00", "activity": "On Flight", "desc": "Depart HAN on flight VJ 932 to NRT", "note": "", "img": "", "link": "" },
           { "time": "08:00 - 11:00", "activity": "Arrival & Immigration", "desc": "Complete immigration and Send Luggage at Narita Airport.", "note": "", "img": "", "link": "" },
           { "time": "11:00 - 12:00", "activity": "Airport Transfer", "desc": "Transfer from Narita Airport to Tokyo (Ota-ku / Heiwajima) via Keisei Skyliner / Train.", "note": "", "img": "", "link": "" },
-          { "time": "12:00 - 13:00", "activity": "Lunch", "desc": "Enjoy authentic Japanese curry at CoCo Ichibanya.", "note": "", "img": "", "link": "" },
+          { "time": "12:00 - 13:00", "activity": "Lunch", "desc": "Enjoy authentic Japanese curry at CoCo Ichibanya.", "note": "", "img": "" },
           { "time": "13:00 - 14:00", "activity": "Check-in & Refresh", "desc": "Airbnb Check in", "note": "", "img": "", "link": "" },
           { "time": "14:00 - 16:30", "activity": "Miraikan Museum", "desc": "Visit Miraikan (National Museum of Emerging Science and Innovation)", "note": "", "img": "", "link": "" },
           { "time": "16:30 - 17:30", "activity": "Odaiba Sunset", "desc": "Sunset stroll at Odaiba Seaside Park; admire Rainbow Bridge and Tokyo Bay skyline.", "note": "", "img": "", "link": "" },
@@ -311,7 +314,7 @@
         "tab": "Day 6 (02/12)",
         "title": "Day 6: 02/12/2026 — Matsumoto Castle • Kyoto",
         "items": [
-          { "time": "08:30 - 11:30", "activity": "Matsumoto Castle", "desc": "Tour Matsumoto Castle (National Treasure) & stroll along historic Nawate Frog Street.", "note": "", "img": "", "link": "" },
+          { "time": "08:30 - 11:30", "activity": "Matsumoto Castle", "desc": "Tour Matsumoto Castle (National Treasure) & stroll along historic Nawate Frog Street.", "note": "", "img": "" },
           { "time": "11:30 - 13:00", "activity": "Lunch", "desc": "Handmade Shinshu Soba noodles at Kobayashi Soba.", "note": "", "img": "", "link": "" },
           { "time": "13:30 - 16:30", "activity": "Train to Kyoto", "desc": "JR Limited Express Shinano / Shinkansen through scenic Kiso Valley to Kyoto Station.", "note": "", "img": "" }
         ]
