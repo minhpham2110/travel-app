@@ -9,9 +9,9 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="Japan Winter 2026">
 
-  <!-- Biểu tượng icon khi thêm ra màn hình chính -->
-  <link rel="apple-touch-icon" href="./icon.png">
-  <link rel="icon" type="image/png" href="./icon.png">
+  <!-- Biểu tượng icon ứng dụng cập nhật sang sakura.jpg -->
+  <link rel="apple-touch-icon" href="./sakura.jpg">
+  <link rel="icon" type="image/jpeg" href="./sakura.jpg">
 
   <!-- Thư viện SheetJS đọc file Excel -->
   <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
@@ -190,7 +190,6 @@
 
     .card-name { font-size: 15px; font-weight: 700; color: #1A202C; margin-bottom: 4px; line-height: 1.35; }
     
-    /* Description & Note styling */
     .card-desc { font-size: 13px; color: #4A5568; line-height: 1.45; word-break: break-word; }
     
     .card-note { 
@@ -314,9 +313,7 @@
         "items": [
           { "time": "08:30 - 11:30", "activity": "Matsumoto Castle", "desc": "Tour Matsumoto Castle (National Treasure) & stroll along historic Nawate Frog Street.", "note": "", "img": "", "link": "" },
           { "time": "11:30 - 13:00", "activity": "Lunch", "desc": "Handmade Shinshu Soba noodles at Kobayashi Soba.", "note": "", "img": "", "link": "" },
-          { "time": "13:30 - 16:30", "activity": "Train to Kyoto", "desc": "JR Limited Express Shinano / Shinkansen through scenic Kiso Valley to Kyoto Station.", "note": "", "img": "", "link": "" },
-          { "time": "17:00 - 18:30", "activity": "Hotel Check-in", "desc": "Check in KIORI EXEC GOJO Kyoto.", "note": "", "img": "", "link": "" },
-          { "time": "18:30 - 20:30", "activity": "Dinner", "desc": "Evening walk & dinner in central Kyoto (Gojo / Shijo Karasuma).", "note": "", "img": "", "link": "" }
+          { "time": "13:30 - 16:30", "activity": "Train to Kyoto", "desc": "JR Limited Express Shinano / Shinkansen through scenic Kiso Valley to Kyoto Station.", "note": "", "img": "" }
         ]
       },
       {
@@ -490,10 +487,8 @@
           const timeHtml = item.time ? `<span class="card-time">${item.time}</span>` : `<span class="card-time">Trong ngày</span>`;
           const badgeHtml = `<span class="badge" style="background:${tagColor}">${item.activity}</span>`;
 
-          // Description (Văn bản thường)
           const descHtml = item.desc ? `<div class="card-desc">${item.desc}</div>` : "";
 
-          // Note (Có link thì gắn hyperlink, không có link hiển thị chữ thường)
           let noteHtml = "";
           if (item.note) {
             if (item.link) {
@@ -507,7 +502,6 @@
             }
           }
 
-          // Ảnh (nếu có đường dẫn ở cột Image)
           let imgHtml = "";
           if (item.img) {
             imgHtml = `<div class="card-img-wrapper"><img src="${item.img}" class="card-img" /></div>`;
