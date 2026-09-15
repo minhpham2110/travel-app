@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>Japan Tour 2026</title>
+  
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Japan 2026">
+
+  <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+
+  <style>
+    :root {
+      --primary: #1D3557;
+      --accent: #E63946;
+      --bg: #F4F6F9;
+      --card-bg: #FFFFFF;
+      --text-main: #1D3557;
+      --text-sub: #5A6A85;
+      --border: #E8ECEF;
+      --tag-flight: #457B9D;
+      --tag-food: #E76F51;
+      --tag-hotel: #6A4C93;
+      --tag-sight: #2A9D8F;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+    body { background-color: var(--bg); color: var(--text-main); padding-bottom: 50px; -webkit-tap-highlight-color: transparent; }
+
+    header {
+      background: linear-gradient(135deg, #1D3557 0%, #457B9D 100%);
+      color: white;
+      padding: calc(env(safe-area-inset-top, 20px) + 12px) 16px 12px;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .header-info { text-align: left; }
+    .header-title { font-size: 17px; font-weight: 700; }
+    .sync-badge {
+      font-size: 11px;
+      display: inline-block;
+      margin-top: 3px;
+      padding: 2px 8px;
+      border-radius: 10px;
+      background: rgba(255,255,255,0.2);
+    }
+    .refresh-btn {
+      background: rgba(255,255,255,0.25);
+      border: 1px solid rgba(255,255,255,0.4);
+      color: white;
+      padding: 6px 12px;
+      border-radius: 16px;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    .tabs-bar {
+      background: #FFFFFF;
+      border-bottom: 1px solid var(--border);
+      position: sticky;
+      top: calc(env(safe-area-inset-top, 20px) + 57px);
+      z-index: 99;
+      overflow-x: auto;
+      white-space: nowrap;
+      scrollbar-width: none;
+      -webkit-overflow-scrolling: touch;
+      padding: 10px 14px;
+      display: flex;
+      gap: 8px;
+    }
+    .tabs-bar::-webkit-scrollbar { display: none; }
+
+    .tab-item {
+      background: #EDF2F7;
+      border: 1px solid transparent;
+      padding: 8px 16px;
+      border-radius: 24px;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-sub);
+      cursor: pointer;
+      flex-shrink: 0;
+      transition: all 0.2s ease;
+    }
+    .tab-item.active {
+      background: var(--accent);
+      color: #FFFFFF;
+      box-shadow: 0 3px 10px rgba(230, 57, 70, 0.3);
+    }
+
+    .content-box { max-width: 550px; margin: 0 auto; padding: 16px; }
+
+    .day-banner {
+      background: #FFFFFF;
+      border-left: 4px solid var(--accent);
+      padding: 12px 14px;
+      border-radius: 8px;
+      margin-bottom: 16px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.03);
+    }
+    .day-banner-title { font-size: 14px; font-weight: 700; color: var(--text-main); line-height: 1.4; }
+
+    .timeline { position: relative; padding-left: 18px; }
+    .timeline::before {
+      content: '';
+      position: absolute;
+      left: 5px;
+      top: 14px;
+      bottom: 14px;
+      width: 2px;
+      background: #D8E2DC;
+    }
+
+    .card {
+      position: relative;
+      background: var(--card-bg);
+      border-radius: 12px;
+      padding: 14px;
+      margin-bottom: 12px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.03);
+      border: 1px solid var(--border);
+    }
+    .card::before {
+      content: '';
+      position: absolute;
+      left: -17px;
+      top: 18px;
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--accent);
+      border: 2px solid #FFF;
+      box-shadow: 0 0 0 1px #D8E2DC;
+    }
+
+    .card-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; }
+    .card-time {
+      background: #EBF2F7;
+      color: #2B4C6F;
+      font-size: 11px;
+      font-weight: 700;
+      padding: 3px 8px;
+      border-radius: 6px;
+    }
+    .badge {
+      font-size: 10px;
+      font-weight: 700;
+      padding: 2px 7px;
+      border-radius: 6px;
+      text-transform: uppercase;
+      color: white;
+    }
+
+    .card-name { font-size: 15px; font-weight: 700; color: #1A202C; margin-bottom: 4px; }
+    .card-desc { font-size: 13px; color: #4A5568; line-height: 1.45; word-break: break-word; }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="header-info">
+      <div class="header-title">CHUYẾN ĐI NHẬT BẢN 2026</div>
+      <div class="sync-badge" id="syncStatus">Đã lưu trong máy ✓</div>
+    </div>
+    <button class="refresh-btn" onclick="syncOnline(true)">Cập nhật ⟳</button>
+  </header>
+
+  <div class="tabs-bar" id="tabsList"></div>
+
+  <div class="content-box">
+    <div class="day-banner" id="dayBanner">
+      <div class="day-banner-title" id="dayFullTitle"></div>
+    </div>
+    <div class="timeline" id="timelineCards"></div>
+  </div>
+
+  <script>
+    const LOCAL_FILE = "./japantour.xlsx";
+    const SHAREPOINT_FILE = "https://bscvn-my.sharepoint.com/:x:/g/personal/minhpq_bsc_com_vn/IQCHNDjCKlC5S4w9i-w0x3OiAVVX9bXIhQsYTux5-12K7tg?e=Pbu1oa&download=1";
+    const CACHE_KEY = "japan_trip_last_saved_v3";
+
+    // Bộ dữ liệu chuẩn bị sẵn dự phòng từ sheet 2026
+    const BACKUP_DATA = [
+      {
+        "tab": "Day 1 (27/11)",
+        "title": "Day 1: 27/11/2026 — Hanoi • Tokyo • Odaiba Sunset",
+        "items": [
+          { "time": "00:55 - 08:00", "activity": "On Flight", "desc": "Depart HAN on flight VJ 932 to NRT" },
+          { "time": "08:00 - 11:00", "activity": "Arrival & Immigration", "desc": "Complete immigration and Send Luggage at Narita Airport." },
+          { "time": "11:00 - 12:00", "activity": "Airport Transfer", "desc": "Transfer from Narita Airport to Tokyo (Ota-ku / Heiwajima) via Keisei Skyliner / Train." },
+          { "time": "12:00 - 13:00", "activity": "Lunch", "desc": "Enjoy authentic Japanese curry at CoCo Ichibanya." },
+          { "time": "13:00 - 14:00", "activity": "Check-in & Refresh", "desc": "Airbnb Check in" },
+          { "time": "14:00 - 16:30", "activity": "Miraikan Museum", "desc": "Visit Miraikan (National Museum of Emerging Science and Innovation)" },
+          { "time": "16:30 - 17:30", "activity": "Odaiba Sunset", "desc": "Sunset stroll at Odaiba Seaside Park; admire Rainbow Bridge and Tokyo Bay skyline." },
+          { "time": "18:00 - 20:00", "activity": "Dinner", "desc": "Traditional Tokyo Monjayaki specialty dinner" },
+          { "time": "20:00 - 21:00", "activity": "Evening Leisure", "desc": "Night at Tokyo Tower and return hotel to rest" }
+        ]
+      },
+      {
+        "tab": "Day 2 (28/11)",
+        "title": "Day 2: 28/11/2026 — Tokyo DisneySea",
+        "items": [
+          { "time": "08:00 - 09:00", "activity": "Transfer to Disney", "desc": "Transfer from hotel to Tokyo DisneySea (Maihama, Chiba)." },
+          { "time": "09:00 - 16:00", "activity": "Tokyo DisneySea", "desc": "Full day exploring themed ports: Mediterranean Harbor, Mysterious Island, Arabian Coast & thrilling attractions. Lunch inside park." },
+          { "time": "17:00 - 21:00", "activity": "Dinner", "desc": "Fresh kaiten-sushi dinner at Sushiro (Omorikita branch)." },
+          { "time": "21:00", "activity": "Return to Hotel", "desc": "Evening leisure & rest at hotel." }
+        ]
+      },
+      {
+        "tab": "Day 3 (29/11)",
+        "title": "Day 3: 29/11/2026 — Mount Fuji • Oshino Hakkai • Lake Kawaguchiko",
+        "items": [
+          { "time": "06:00 - 08:00", "activity": "Depart for Mt. Fuji", "desc": "Check out hotel; transfer from Tokyo toward Fuji Five Lakes region." },
+          { "time": "08:00 - 12:00", "activity": "Fuji Heritage Tour", "desc": "Sightseeing at Honcho Street, Lake Yamanaka Boardwalk, and ancient spring village Oshino Hakkai." },
+          { "time": "12:00 - 13:30", "activity": "Lunch", "desc": "Authentic Koshu Hoto Kosaku noodles (pumpkin miso noodle stew)." },
+          { "time": "13:30 - 16:00", "activity": "Kawaguchiko Sights", "desc": "Scenic walk at Oishi Park overlooking Mt. Fuji & photo stop at Mt. Fuji Lawson." },
+          { "time": "16:30 - 18:00", "activity": "Hotel Check-in", "desc": "Check in Fuji Kawaguchiko Resort Hotel; relax with Mount Fuji view." },
+          { "time": "18:00 - 20:00", "activity": "Dinner", "desc": "Charcoal-grilled BBQ/ Yakitori dinner at Sanrokuen." }
+        ]
+      },
+      {
+        "tab": "Day 4 (30/11)",
+        "title": "Day 4: 30/11/2026 — Kawaguchiko • Matsumoto City",
+        "items": [
+          { "time": "08:00 - 11:30", "activity": "Lakeside Cycling", "desc": "Morning bike tour around Lake Kawaguchiko; lakeside coffee break (The Park Cafe / Lake Bake)." },
+          { "time": "11:30 - 13:00", "activity": "Lunch", "desc": "Crispy Tonkatsu / Tempura at Fuji Tempura Idaten (or Koushuya)." },
+          { "time": "13:30 - 16:30", "activity": "Transfer to Matsumoto", "desc": "Scenic transfer by express bus / JR train from Kawaguchiko Station to Matsumoto (Nagano)." },
+          { "time": "16:30 - 18:00", "activity": "Hotel Check-in", "desc": "Check in Toyoko Inn Matsumoto Station Ekimae." },
+          { "time": "18:00 - 20:30", "activity": "Dinner & City Walk", "desc": "Savor Japanese Hamburger Steak (Amiya Yakiniku) & explore Matsumoto downtown." }
+        ]
+      },
+      {
+        "tab": "Day 5 (01/12)",
+        "title": "Day 5: 01/12/2026 — Kamikochi Alpine Valley",
+        "items": [
+          { "time": "07:40 - 09:00", "activity": "Bus to Kamikochi", "desc": "Depart Matsumoto Bus Terminal via scenic alpine bus to Kamikochi (Chubu Sangaku National Park)." },
+          { "time": "09:00 - 14:00", "activity": "Kamikochi Trekking", "desc": "Nature hike along Azusa River from Taisho Pond to Kappa Bridge; admire snow-capped Alps. Lunch in valley." },
+          { "time": "14:30 - 16:00", "activity": "Return to Matsumoto", "desc": "Alpine bus transfer from Kamikochi back to Matsumoto Station." },
+          { "time": "18:00 - 20:30", "activity": "Dinner", "desc": "Shinshu Premium Beef yakiniku & Nagano regional specialties (Horumon Ya Kaishu)." }
+        ]
+      },
+      {
+        "tab": "Day 6 (02/12)",
+        "title": "Day 6: 02/12/2026 — Matsumoto Castle • Kyoto",
+        "items": [
+          { "time": "08:30 - 11:30", "activity": "Matsumoto Castle", "desc": "Tour Matsumoto Castle (National Treasure) & stroll along historic Nawate Frog Street." },
+          { "time": "11:30 - 13:00", "activity": "Lunch", "desc": "Handmade Shinshu Soba noodles at Kobayashi Soba." },
+          { "time": "13:30 - 16:30", "activity": "Train to Kyoto", "desc": "JR Limited Express Shinano / Shinkansen through scenic Kiso Valley to Kyoto Station." },
+          { "time": "17:00 - 18:30", "activity": "Hotel Check-in", "desc": "Check in KIORI EXEC GOJO Kyoto." },
+          { "time": "18:30 - 20:30", "activity": "Dinner", "desc": "Evening walk & dinner in central Kyoto (Gojo / Shijo Karasuma)." }
+        ]
+      },
+      {
+        "tab": "Day 7 (03/12)",
+        "title": "Day 7: 03/12/2026 — Arashiyama Bamboo Grove • Sagano Train",
+        "items": [
+          { "time": "08:00 - 12:00", "activity": "Arashiyama Sights", "desc": "Morning stroll in Bamboo Grove, Hozu River scenic boat tour & visit moss temple Otagi Nenbutsu-ji." },
+          { "time": "12:00 - 13:30", "activity": "Lunch", "desc": "Kyoto style Udon noodles & sweets at Ogura Cha-Ya." },
+          { "time": "13:30 - 16:30", "activity": "Sagano Romantic Train", "desc": "Vintage scenic train ride along Sagano romantic river gorge." },
+          { "time": "17:00 - 19:30", "activity": "Shopping & Dinner", "desc": "Shijo-Kawaramachi shopping & gourmet Pizza date night (400℃ Pizza Kyoto)." }
+        ]
+      },
+      {
+        "tab": "Day 8 (04/12)",
+        "title": "Day 8: 04/12/2026 —  Kimono Experience • Gion & Kiyomizu • Nara",
+        "items": [
+          { "time": "08:30 - 11:30", "activity": "Kimono & Ancient Kyoto", "desc": "Wear traditional Kimono; explore Ninenzaka, Sannenzaka, Gion & panoramic terrace of Kiyomizu-dera." },
+          { "time": "11:30 - 13:00", "activity": "Lunch", "desc": "Charcoal-grilled Unagi Donburi (Eel Rice Bowl) at Gion Unagi Kawato." },
+          { "time": "13:00 - 17:30", "activity": "Matcha lover with deers", "desc": "Visit Uji or Nara or Ine Village" },
+          { "time": "18:00 - 20:30", "activity": "Dinner & Souvenirs", "desc": "Kyoto farewell dinner & traditional Matcha souvenir shopping." }
+        ]
+      },
+      {
+        "tab": "Day 9 (05/12)",
+        "title": "Day 9: 05/12/2026 — Kyoto • Kansai Airport • Hanoi",
+        "items": [
+          { "time": "09:00 - 11:00", "activity": "Morning Walk & Packing", "desc": "Hotel check-out, luggage storage & final souvenir walk around Kyoto Station." },
+          { "time": "11:00 - 12:30", "activity": "Lunch", "desc": "Teishoku set lunch / Gyudon at Kyoto Porta Mall." },
+          { "time": "12:30 - 14:00", "activity": "Kansai Airport Express", "desc": "Board JR Haruka Airport Express from Kyoto Station to Kansai International Airport (KIX)." },
+          { "time": "14:00 - 17:00", "activity": "Departure Flight", "desc": "Duty-free shopping, flight check-in and board flight returning to Hanoi." }
+        ]
+      }
+    ];
+
+    let tripData = [];
+    let activeIndex = 0;
+
+    function init() {
+      // 1. Tải bản lưu gần nhất từ máy
+      const cached = localStorage.getItem(CACHE_KEY);
+      if (cached) {
+        try { tripData = JSON.parse(cached); } catch(e) { tripData = BACKUP_DATA; }
+      } else {
+        tripData = BACKUP_DATA;
+      }
+      renderUI();
+
+      // 2. Thử cập nhật ngầm
+      syncOnline(false);
+    }
+
+    async function syncOnline(isManual) {
+      const badge = document.getElementById("syncStatus");
+      if (isManual) badge.innerText = "Đang kiểm tra...";
+
+      let arrayBuffer = null;
+
+      // Ưu tiên đọc file nội bộ nếu kéo cả thư mục lên Netlify
+      try {
+        let res = await fetch(LOCAL_FILE);
+        if (res.ok) arrayBuffer = await res.arrayBuffer();
+      } catch (e) {}
+
+      // Nếu không có file nội bộ, thử tải qua proxy SharePoint
+      if (!arrayBuffer) {
+        try {
+          let proxy = "https://api.allorigins.win/raw?url=" + encodeURIComponent(SHAREPOINT_FILE);
+          let res = await fetch(proxy);
+          if (res.ok) arrayBuffer = await res.arrayBuffer();
+        } catch (e) {}
+      }
+
+      // Xử lý dữ liệu nếu lấy được file mới
+      if (arrayBuffer) {
+        try {
+          const workbook = XLSX.read(arrayBuffer, { type: 'array' });
+          const sheet = workbook.Sheets["2026"] || workbook.Sheets[workbook.SheetNames[0]];
+          const rows = XLSX.utils.sheet_to_json(sheet, { header: 1, defval: "" });
+          const parsed = parseSheet(rows);
+          if (parsed && parsed.length > 0) {
+            tripData = parsed;
+            localStorage.setItem(CACHE_KEY, JSON.stringify(parsed));
+            renderUI();
+            badge.innerText = "Đã cập nhật mới nhất ✓";
+            return;
+          }
+        } catch(err) {}
+      }
+
+      // Nếu không kết nối được mạng, vẫn an toàn hiển thị dữ liệu lưu sẵn
+      badge.innerText = "Chế độ xem Offline ✓";
+    }
+
+    function formatTime(val) {
+      if (!val) return "";
+      if (typeof val === 'number') {
+        let sec = Math.round(val * 86400);
+        let h = Math.floor(sec / 3600);
+        let m = Math.floor((sec % 3600) / 60);
+        return `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}`;
+      }
+      let s = String(val).trim();
+      return (s.includes(":") && s.length === 8) ? s.substring(0, 5) : s;
+    }
+
+    function parseSheet(rows) {
+      let parsed = [];
+      let cur = null;
+
+      rows.forEach(r => {
+        const c0 = String(r[0] || "").trim();
+        const c1 = String(r[1] || "").trim();
+        const c2 = String(r[2] || "").trim();
+
+        if (!c0 && !c1 && !c2) return;
+        if (c0.toLowerCase() === "time" && c1.toLowerCase() === "activity") return;
+
+        if ((c0.toLowerCase().startsWith("day ") || c0.toLowerCase().startsWith("ngày ")) && (!c1 || c1 === "undefined")) {
+          if (cur) parsed.push(cur);
+          let tab = c0.split("—")[0].split(":")[0].trim();
+          let m = c0.match(/\d{1,2}\/\d{1,2}/);
+          if (m) tab += ` (${m[0]})`;
+          cur = { tab: tab, title: c0, items: [] };
+          return;
+        }
+
+        if (cur && (c0 || c1)) {
+          cur.items.push({
+            time: formatTime(c0),
+            activity: c1 || "Hoạt động",
+            desc: c2
+          });
+        }
+      });
+
+      if (cur) parsed.push(cur);
+      return parsed;
+    }
+
+    function getTagColor(act) {
+      let a = (act || "").toLowerCase();
+      if (a.includes("flight") || a.includes("transfer") || a.includes("train") || a.includes("bus")) return "var(--tag-flight)";
+      if (a.includes("lunch") || a.includes("dinner")) return "var(--tag-food)";
+      if (a.includes("hotel") || a.includes("check-in") || a.includes("refresh")) return "var(--tag-hotel)";
+      return "var(--tag-sight)";
+    }
+
+    function renderUI() {
+      const tabsBar = document.getElementById("tabsList");
+      tabsBar.innerHTML = "";
+
+      tripData.forEach((day, idx) => {
+        const btn = document.createElement("button");
+        btn.className = `tab-item ${idx === activeIndex ? "active" : ""}`;
+        btn.innerText = day.tab;
+        btn.onclick = () => {
+          activeIndex = idx;
+          renderUI();
+          btn.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+        };
+        tabsBar.appendChild(btn);
+      });
+
+      const activeDay = tripData[activeIndex];
+      if (activeDay) {
+        document.getElementById("dayFullTitle").innerText = activeDay.title;
+        const cardContainer = document.getElementById("timelineCards");
+        cardContainer.innerHTML = "";
+
+        activeDay.items.forEach(item => {
+          const card = document.createElement("div");
+          card.className = "card";
+          const tagColor = getTagColor(item.activity);
+          const timeHtml = item.time ? `<span class="card-time">${item.time}</span>` : `<span class="card-time">Trong ngày</span>`;
+          const badgeHtml = `<span class="badge" style="background:${tagColor}">${item.activity}</span>`;
+
+          card.innerHTML = `
+            <div class="card-head">
+              ${timeHtml}
+              ${badgeHtml}
+            </div>
+            <div class="card-name">${item.activity}</div>
+            <div class="card-desc">${item.desc}</div>
+          `;
+          cardContainer.appendChild(card);
+        });
+      }
+    }
+
+    init();
+  </script>
+</body>
+</html>

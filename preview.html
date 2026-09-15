@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>Lịch Trình Du Lịch Nhật Bản 2026</title>
+  
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Kamikochi 2026">
+
+  <style>
+    :root {
+      --primary: #1D3557;
+      --accent: #E63946;
+      --accent-soft: #FDE8E9;
+      --bg: #F4F6F9;
+      --card-bg: #FFFFFF;
+      --text-main: #1D3557;
+      --text-sub: #5A6A85;
+      --border: #E8ECEF;
+      --tag-done: #2A9D8F;
+      --tag-ks: #6A4C93;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
+    body { background-color: var(--bg); color: var(--text-main); padding-bottom: 50px; -webkit-tap-highlight-color: transparent; }
+
+    /* Header iPhone Style */
+    header {
+      background: linear-gradient(135deg, #1D3557 0%, #457B9D 100%);
+      color: white;
+      padding: calc(env(safe-area-inset-top, 20px) + 14px) 16px 14px;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+      text-align: center;
+    }
+    .header-title { font-size: 18px; font-weight: 700; letter-spacing: 0.3px; }
+    .header-sub { font-size: 12px; opacity: 0.85; margin-top: 3px; font-weight: 400; }
+
+    /* Tabs Bar dạng cuộn ngang */
+    .tabs-bar {
+      background: #FFFFFF;
+      border-bottom: 1px solid var(--border);
+      position: sticky;
+      top: calc(env(safe-area-inset-top, 20px) + 61px);
+      z-index: 99;
+      overflow-x: auto;
+      white-space: nowrap;
+      scrollbar-width: none;
+      -webkit-overflow-scrolling: touch;
+      padding: 10px 14px;
+      display: flex;
+      gap: 8px;
+    }
+    .tabs-bar::-webkit-scrollbar { display: none; }
+
+    .tab-item {
+      background: #EDF2F7;
+      border: 1px solid transparent;
+      padding: 8px 16px;
+      border-radius: 24px;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-sub);
+      cursor: pointer;
+      flex-shrink: 0;
+      transition: all 0.2s ease;
+    }
+    .tab-item.active {
+      background: var(--accent);
+      color: #FFFFFF;
+      box-shadow: 0 3px 10px rgba(230, 57, 70, 0.3);
+    }
+
+    /* Khung nội dung */
+    .content-box { max-width: 550px; margin: 0 auto; padding: 16px; }
+
+    /* Tiêu đề ngày */
+    .day-banner {
+      background: #FFFFFF;
+      border-left: 4px solid var(--accent);
+      padding: 12px 14px;
+      border-radius: 8px;
+      margin-bottom: 16px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.03);
+    }
+    .day-banner-title { font-size: 14px; font-weight: 700; color: var(--text-main); line-height: 1.4; }
+
+    /* Timeline Card */
+    .timeline { position: relative; padding-left: 18px; }
+    .timeline::before {
+      content: '';
+      position: absolute;
+      left: 5px;
+      top: 14px;
+      bottom: 14px;
+      width: 2px;
+      background: #D8E2DC;
+    }
+
+    .card {
+      position: relative;
+      background: var(--card-bg);
+      border-radius: 12px;
+      padding: 14px;
+      margin-bottom: 12px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.03);
+      border: 1px solid var(--border);
+    }
+    .card::before {
+      content: '';
+      position: absolute;
+      left: -17px;
+      top: 18px;
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--accent);
+      border: 2px solid #FFF;
+      box-shadow: 0 0 0 1px #D8E2DC;
+    }
+
+    .card-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; }
+    .card-time {
+      background: #EBF2F7;
+      color: #2B4C6F;
+      font-size: 11px;
+      font-weight: 700;
+      padding: 3px 8px;
+      border-radius: 6px;
+    }
+    .badge {
+      font-size: 10px;
+      font-weight: 700;
+      padding: 2px 7px;
+      border-radius: 6px;
+      text-transform: uppercase;
+    }
+    .badge-done { background: #E8F5E9; color: var(--tag-done); }
+    .badge-ks { background: #F3E8FF; color: var(--tag-ks); }
+    .badge-other { background: #FFF3CD; color: #856404; }
+
+    .card-name { font-size: 14px; font-weight: 700; color: #1A202C; margin-bottom: 4px; line-height: 1.35; }
+    .card-desc { font-size: 12px; color: #4A5568; margin-bottom: 4px; line-height: 1.4; word-break: break-word; }
+    .card-desc a { color: var(--accent); text-decoration: underline; }
+
+    .card-foot {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 8px;
+      padding-top: 8px;
+      border-top: 1px dashed var(--border);
+      font-size: 11px;
+    }
+    .card-price { font-weight: 700; color: var(--accent); }
+    .card-note { color: var(--text-sub); font-style: italic; }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="header-title">LỊCH TRÌNH NHẬT BẢN 2026</div>
+    <div class="header-sub">Bản Xem Trước • Tuyến Kamikochi</div>
+  </header>
+
+  <div class="tabs-bar" id="tabsList"></div>
+
+  <div class="content-box">
+    <div class="day-banner">
+      <div class="day-banner-title" id="dayFullTitle"></div>
+    </div>
+    <div class="timeline" id="timelineCards"></div>
+  </div>
+
+  <script>
+    // Dữ liệu bóc tách đầy đủ 9 ngày từ file TOUR NHẬT BẢN 2026.xlsx
+    const tripData = [
+      {
+        tab: "Ngày 1 (27/11)",
+        title: "Ngày 1: 27/11/2025 - Thứ 6 - XUẤT PHÁT TỪ HÀ NỘI + ODAIBA",
+        items: [
+          { time: "00:55 - 08:00", name: "Bay HAN - NRT", desc: "", cost: "8,317,000 VND (~16,634,000 đ)", note: "Done", badge: "DC" },
+          { time: "08:00 - 09:30", name: "Check in NRT", desc: "", cost: "", note: "", badge: "" },
+          { time: "09:40 - 10:40", name: "NRT - Otaku", desc: "Skyliner", cost: "3,000 JPY (~1,002,000 đ)", note: "", badge: "" },
+          { time: "11:00 - 14:00", name: "Ăn trưa - Cơm cà ri", desc: "Coco Ichibanya", cost: "2,000 JPY (~668,000 đ)", note: "", badge: "Nhỏ" },
+          { time: "11:00 - 13:00", name: "Khách sạn Otaku", desc: "", cost: "1,990,000 VND (~3,980,000 đ)", note: "Heiwajima Station", badge: "KS" },
+          { time: "13:15 - 14:00", name: "Otaku - Odaiba", desc: "", cost: "800 JPY (~267,200 đ)", note: "", badge: "" },
+          { time: "14:00 - 16:30", name: "Bảo tàng Miraikan/ or Tokyo Disaster Prevention Park", desc: "https://www.miraikan.jst.go.jp/", cost: "940 JPY (~313,960 đ)", note: "", badge: "" },
+          { time: "16:30 - 17:30", name: "Hoàng hôn Odaiba Seaside Park", desc: "", cost: "", note: "", badge: "" },
+          { time: "18:00 - 19:30", name: "Ăn tối - Monjayaki", desc: "", cost: "5,000 JPY (~1,670,000 đ)", note: "", badge: "Ăn" },
+          { time: "21:00 - 21:30", name: "Odaiba - Otaku", desc: "", cost: "800 JPY (~267,200 đ)", note: "", badge: "" },
+          { time: "22:00", name: "Mua đồ ăn sáng", desc: "Family Mart", cost: "1,000 JPY (~334,000 đ)", note: "", badge: "" },
+          { time: "", name: "-Shinjuku Cat Café", desc: "Hoạt động dự phòng nếu có sức", cost: "", note: "", badge: "" },
+          { time: "", name: "Alpen tokyo", desc: "Hoạt động dự phòng nếu có sức", cost: "", note: "", badge: "" },
+          { time: "", name: "- 3D Cat Cross Shinjuku Space", desc: "Hoạt động dự phòng nếu có sức", cost: "", note: "", badge: "" }
+        ]
+      },
+      {
+        tab: "Ngày 2 (28/11)",
+        title: "Ngày 2: 28/11/2025 - Thứ 7 - TOKYO DISNEY SEA",
+        items: [
+          { time: "07:30 - 08:30", name: "Otaku - Tokyo Disney", desc: "", cost: "1,000 JPY (~334,000 đ)", note: "", badge: "" },
+          { time: "08:30 - 21:00", name: "Tokyo Disney Sea", desc: "https://www.tokyodisneyresort.jp/en/tds/", cost: "8,900 JPY (~2,972,600 đ)", note: "Done", badge: "Vé" },
+          { time: "12:00 - 13:00", name: "Ăn trưa trong công viên", desc: "", cost: "2,000 JPY (~668,000 đ)", note: "", badge: "" },
+          { time: "18:30 - 19:30", name: "Ăn tối trong công viên", desc: "", cost: "2,000 JPY (~668,000 đ)", note: "", badge: "" },
+          { time: "21:00 - 22:00", name: "Tokyo Disney - Otaku", desc: "", cost: "1,000 JPY (~334,000 đ)", note: "", badge: "" },
+          { time: "22:00", name: "Mua đồ ăn sáng", desc: "Family Mart", cost: "1,000 JPY (~334,000 đ)", note: "", badge: "" }
+        ]
+      },
+      {
+        tab: "Ngày 3 (29/11)",
+        title: "Ngày 3: 29/11/2025 - PHÚ SĨ 2 NGÀY 1 ĐÊM",
+        items: [
+          { time: "07:30 - 08:00", name: "Check out Otaku - Shinjuku", desc: "", cost: "500 JPY (~167,000 đ)", note: "", badge: "" },
+          { time: "08:15 - 10:00", name: "Shinjuku - Kawaguchiko", desc: "Bus cao tốc", cost: "2,200 JPY (~734,800 đ)", note: "", badge: "Bus" },
+          { time: "10:30 - 12:00", name: "Ăn trưa Mì Houtou", desc: "Houtou Fudou Kawaguchiko", cost: "2,000 JPY (~668,000 đ)", note: "", badge: "" },
+          { time: "12:00 - 15:00", name: "Hồ Kawaguchiko & Cáp treo Mt. Fuji Panoramic", desc: "", cost: "1,000 JPY (~334,000 đ)", note: "", badge: "" },
+          { time: "15:30 - 17:30", name: "Làng cổ Oshino Hakkai", desc: "8 hồ nước tuyết tan", cost: "", note: "", badge: "" },
+          { time: "18:00 - 20:30", name: "Check in Khách sạn Phú Sĩ", desc: "Nghỉ ngơi onsen & ăn tối", cost: "3,500,000 VND (~7,000,000 đ)", note: "", badge: "KS" }
+        ]
+      },
+      {
+        tab: "Ngày 4 (30/11)",
+        title: "Ngày 4: 30/11/2025 - NGHỈ SÁNG FUJI HIDDEN PLACES, ĐI MATSUMOTO",
+        items: [
+          { time: "06:00 - 07:30", name: "Bình minh Phú Sĩ & Ăn sáng", desc: "", cost: "", note: "", badge: "" },
+          { time: "08:30 - 10:30", name: "Chùa Chureito Pagoda (Arakurayama)", desc: "Góc ngắm núi Phú Sĩ", cost: "", note: "", badge: "" },
+          { time: "11:00 - 12:30", name: "Phố cổ Shimoyoshida (Honcho Street)", desc: "", cost: "", note: "", badge: "" },
+          { time: "13:30 - 16:30", name: "Kawaguchiko ➔ Matsumoto", desc: "Tàu tốc hành Limited Express Chuo Line", cost: "4,500 JPY (~1,503,000 đ)", note: "", badge: "Train" },
+          { time: "17:00 - 18:30", name: "Check in Khách sạn Matsumoto", desc: "", cost: "1,500,000 VND (~3,000,000 đ)", note: "", badge: "KS" },
+          { time: "19:00 - 21:00", name: "Ăn tối đặc sản Nagano & Phố Nawate", desc: "", cost: "2,500 JPY (~835,000 đ)", note: "", badge: "" }
+        ]
+      },
+      {
+        tab: "Ngày 5 (01/12)",
+        title: "Ngày 5: 1/12/2025 - KAMIKOCHI",
+        items: [
+          { time: "06:00 - 07:45", name: "Matsumoto ➔ Thung lũng Kamikochi", desc: "Tàu điện Shin-Shimashima + Bus trung chuyển", cost: "2,710 JPY (~905,140 đ)", note: "Vé khứ hồi", badge: "Bus" },
+          { time: "08:00 - 10:30", name: "Hồ Taisho ➔ Cầu Kappa (Kappabashi)", desc: "Trekking dọc bờ suối Azusa ngắm dãy Alps phủ tuyết", cost: "", note: "", badge: "" },
+          { time: "11:00 - 12:30", name: "Ăn trưa khu vực Cầu Kappa", desc: "Thưởng thức set cơm cá suối nướng", cost: "2,000 JPY (~668,000 đ)", note: "", badge: "" },
+          { time: "13:00 - 15:30", name: "Hồ Myojin & Đền Hotaka", desc: "Khám phá vùng lõi rừng linh thiêng", cost: "500 JPY (~167,000 đ)", note: "", badge: "Vé" },
+          { time: "16:00 - 18:00", name: "Kamikochi về lại ga Matsumoto", desc: "Bus chiều về", cost: "", note: "", badge: "" }
+        ]
+      },
+      {
+        tab: "Ngày 6 (02/12)",
+        title: "Ngày 6: 2/12/2025 - MATSUMOTO - KYOTO",
+        items: [
+          { time: "08:30 - 11:00", name: "Tham quan Lâu đài Matsumoto", desc: "Quốc bảo lâu đài quạ đen nguyên bản", cost: "700 JPY (~233,800 đ)", note: "", badge: "Vé" },
+          { time: "11:30 - 14:30", name: "Tàu Shinano + Shinkansen đi Kyoto", desc: "Matsumoto ➔ Nagoya ➔ Kyoto", cost: "10,500 JPY (~3,507,000 đ)", note: "", badge: "Tàu" },
+          { time: "15:00 - 16:30", name: "Check-in Khách sạn Kyoto", desc: "", cost: "2,100,000 VND (~4,200,000 đ)", note: "", badge: "KS" },
+          { time: "17:30 - 20:30", name: "Dạo khu Gion & Phố cổ Pontocho", desc: "Ăn tối thịt nướng / mì soba", cost: "3,000 JPY (~1,002,000 đ)", note: "", badge: "" }
+        ]
+      },
+      {
+        tab: "Ngày 7 (03/12)",
+        title: "Ngày 7: 3/12/2025 - ĐI NGẮM LÁ ĐỎ Ở RỪNG TRÚC",
+        items: [
+          { time: "07:30 - 09:30", name: "Rừng trúc Arashiyama & Cầu Togetsukyo", desc: "Ngắm lá đỏ mùa thu Kyoto", cost: "", note: "", badge: "" },
+          { time: "09:30 - 11:30", name: "Chùa Tenryu-ji & Vườn Sogenchi", desc: "Khu vườn di sản ngắm lá phong đỏ rực", cost: "800 JPY (~267,200 đ)", note: "", badge: "Vé" },
+          { time: "12:00 - 13:30", name: "Ăn trưa đậu phụ Tofu Arashiyama", desc: "", cost: "2,000 JPY (~668,000 đ)", note: "", badge: "" },
+          { time: "14:30 - 17:00", name: "Chùa Thanh Thủy Kiyomizu-dera", desc: "Khán đài gỗ ngắm toàn cảnh Kyoto lúc hoàng hôn", cost: "400 JPY (~133,600 đ)", note: "", badge: "Vé" },
+          { time: "18:00 - 20:30", name: "Ăn tối ẩm thực Chợ Nishiki", desc: "", cost: "2,500 JPY (~835,000 đ)", note: "", badge: "" }
+        ]
+      },
+      {
+        tab: "Ngày 8 (04/12)",
+        title: "Ngày 8: 4/12/2025 - ĐI CHÙA KATSUOJI - CẦU NGUYỆN",
+        items: [
+          { time: "08:00 - 09:30", name: "Kyoto ➔ Minoh (Osaka)", desc: "Tàu Hankyu", cost: "900 JPY (~300,600 đ)", note: "", badge: "" },
+          { time: "10:00 - 13:30", name: "Chùa búp bê may mắn Katsuo-ji", desc: "Ngôi chùa nổi tiếng với búp bê Daruma đỏ", cost: "500 JPY (~167,000 đ)", note: "", badge: "Vé" },
+          { time: "14:30 - 17:00", name: "Dạo phố Dotonbori - Namba", desc: "Chụp hình biển hiệu Glico Man, mua sắm", cost: "", note: "", badge: "" },
+          { time: "18:00 - 21:00", name: "Ăn tối tiệc chia tay: Bò Wagyu / Takoyaki", desc: "", cost: "4,000 JPY (~1,336,000 đ)", note: "", badge: "" }
+        ]
+      },
+      {
+        tab: "Ngày 9 (05/12)",
+        title: "Ngày 9: 5/12/2025 - ĐI VỀ HÀ NỘI",
+        items: [
+          { time: "07:30 - 08:30", name: "Check out khách sạn Osaka", desc: "Sắp xếp hành lý", cost: "", note: "", badge: "" },
+          { time: "09:00 - 10:15", name: "Tàu Nankai Rapi:t ra Sân bay Kansai (KIX)", desc: "", cost: "1,450 JPY (~484,300 đ)", note: "", badge: "Tàu" },
+          { time: "10:30 - 14:00", name: "Thủ tục xuất cảnh KIX & Bay về Nội Bài (HAN)", desc: "Kết thúc chuyến đi an toàn", cost: "", note: "Done", badge: "Bay" }
+        ]
+      }
+    ];
+
+    let activeIndex = 0;
+
+    function renderUI() {
+      const tabsBar = document.getElementById("tabsList");
+      tabsBar.innerHTML = "";
+
+      tripData.forEach((day, idx) => {
+        const btn = document.createElement("button");
+        btn.className = `tab-item ${idx === activeIndex ? "active" : ""}`;
+        btn.innerText = day.tab;
+        btn.onclick = () => {
+          activeIndex = idx;
+          renderUI();
+          btn.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+        };
+        tabsBar.appendChild(btn);
+      });
+
+      const activeDay = tripData[activeIndex];
+      document.getElementById("dayFullTitle").innerText = activeDay.title;
+
+      const cardContainer = document.getElementById("timelineCards");
+      cardContainer.innerHTML = "";
+
+      activeDay.items.forEach(item => {
+        const card = document.createElement("div");
+        card.className = "card";
+
+        let badgeClass = "badge-other";
+        if (item.badge === "Done" || item.note === "Done") badgeClass = "badge-done";
+        else if (item.badge === "KS") badgeClass = "badge-ks";
+
+        const badgeHtml = item.badge ? `<span class="badge ${badgeClass}">${item.badge}</span>` : "";
+        const timeHtml = item.time ? `<span class="card-time">${item.time}</span>` : `<span class="card-time">Trong ngày</span>`;
+
+        let descHtml = "";
+        if (item.desc) {
+          if (item.desc.startsWith("http")) {
+            descHtml = `<div class="card-desc"><a href="${item.desc}" target="_blank">🔗 Mở link thông tin chi tiết</a></div>`;
+          } else {
+            descHtml = `<div class="card-desc">${item.desc}</div>`;
+          }
+        }
+
+        let footHtml = "";
+        if (item.cost || item.note) {
+          footHtml = `
+            <div class="card-foot">
+              <span class="card-price">${item.cost || ""}</span>
+              <span class="card-note">${item.note || ""}</span>
+            </div>
+          `;
+        }
+
+        card.innerHTML = `
+          <div class="card-head">
+            ${timeHtml}
+            ${badgeHtml}
+          </div>
+          <div class="card-name">${item.name}</div>
+          ${descHtml}
+          ${footHtml}
+        `;
+        cardContainer.appendChild(card);
+      });
+    }
+
+    renderUI();
+  </script>
+</body>
+</html>
