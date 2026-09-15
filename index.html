@@ -9,6 +9,10 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="Japan Winter 2026">
 
+  <!-- Biểu tượng icon khi thêm ra màn hình chính -->
+  <link rel="apple-touch-icon" href="./icon.png">
+  <link rel="icon" type="image/png" href="./icon.png">
+
   <!-- Thư viện SheetJS đọc file Excel -->
   <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 
@@ -200,19 +204,6 @@
       object-fit: cover;
       display: block;
     }
-
-    .upload-btn-label {
-      display: inline-block;
-      margin-top: 8px;
-      font-size: 11px;
-      color: var(--primary);
-      background: var(--accent-soft);
-      padding: 4px 10px;
-      border-radius: 12px;
-      cursor: pointer;
-      font-weight: 600;
-    }
-    .file-input { display: none; }
   </style>
 </head>
 <body>
@@ -237,109 +228,106 @@
   <script>
     const LOCAL_FILE = "./japantour.xlsx";
     const SHAREPOINT_FILE = "https://bscvn-my.sharepoint.com/:x:/g/personal/minhpq_bsc_com_vn/IQCHNDjCKlC5S4w9i-w0x3OiAVVX9bXIhQsYTux5-12K7tg?e=Pbu1oa&download=1";
-    const CACHE_KEY = "japan_trip_last_saved_v6";
-    const USER_PHOTOS_KEY = "japan_trip_user_photos_v6";
-
-    let userPhotos = JSON.parse(localStorage.getItem(USER_PHOTOS_KEY) || "{}");
+    const CACHE_KEY = "japan_trip_last_saved_clean_v1";
 
     const BACKUP_DATA = [
       {
         "tab": "Day 1 (27/11)",
         "title": "Day 1: 27/11/2026 — Hanoi • Tokyo • Odaiba Sunset",
         "items": [
-          { "id": "d1_0", "time": "00:55 - 08:00", "activity": "On Flight", "desc": "Depart HAN on flight VJ 932 to NRT", "img": "" },
-          { "id": "d1_1", "time": "08:00 - 11:00", "activity": "Arrival & Immigration", "desc": "Complete immigration and Send Luggage at Narita Airport.", "img": "" },
-          { "id": "d1_2", "time": "11:00 - 12:00", "activity": "Airport Transfer", "desc": "Transfer from Narita Airport to Tokyo (Ota-ku / Heiwajima) via Keisei Skyliner / Train.", "img": "" },
-          { "id": "d1_3", "time": "12:00 - 13:00", "activity": "Lunch", "desc": "Enjoy authentic Japanese curry at CoCo Ichibanya.", "img": "" },
-          { "id": "d1_4", "time": "13:00 - 14:00", "activity": "Check-in & Refresh", "desc": "Airbnb Check in", "img": "" },
-          { "id": "d1_5", "time": "14:00 - 16:30", "activity": "Miraikan Museum", "desc": "Visit Miraikan (National Museum of Emerging Science and Innovation)", "img": "" },
-          { "id": "d1_6", "time": "16:30 - 17:30", "activity": "Odaiba Sunset", "desc": "Sunset stroll at Odaiba Seaside Park; admire Rainbow Bridge and Tokyo Bay skyline.", "img": "" },
-          { "id": "d1_7", "time": "18:00 - 20:00", "activity": "Dinner", "desc": "Traditional Tokyo Monjayaki specialty dinner", "img": "" },
-          { "id": "d1_8", "time": "20:00 - 21:00", "activity": "Evening Leisure", "desc": "Night at Tokyo Tower and return hotel to rest", "img": "" }
+          { "time": "00:55 - 08:00", "activity": "On Flight", "desc": "Depart HAN on flight VJ 932 to NRT", "img": "" },
+          { "time": "08:00 - 11:00", "activity": "Arrival & Immigration", "desc": "Complete immigration and Send Luggage at Narita Airport.", "img": "" },
+          { "time": "11:00 - 12:00", "activity": "Airport Transfer", "desc": "Transfer from Narita Airport to Tokyo (Ota-ku / Heiwajima) via Keisei Skyliner / Train.", "img": "" },
+          { "time": "12:00 - 13:00", "activity": "Lunch", "desc": "Enjoy authentic Japanese curry at CoCo Ichibanya.", "img": "" },
+          { "time": "13:00 - 14:00", "activity": "Check-in & Refresh", "desc": "Airbnb Check in", "img": "" },
+          { "time": "14:00 - 16:30", "activity": "Miraikan Museum", "desc": "Visit Miraikan (National Museum of Emerging Science and Innovation)", "img": "" },
+          { "time": "16:30 - 17:30", "activity": "Odaiba Sunset", "desc": "Sunset stroll at Odaiba Seaside Park; admire Rainbow Bridge and Tokyo Bay skyline.", "img": "" },
+          { "time": "18:00 - 20:00", "activity": "Dinner", "desc": "Traditional Tokyo Monjayaki specialty dinner", "img": "" },
+          { "time": "20:00 - 21:00", "activity": "Evening Leisure", "desc": "Night at Tokyo Tower and return hotel to rest", "img": "" }
         ]
       },
       {
         "tab": "Day 2 (28/11)",
         "title": "Day 2: 28/11/2026 — Tokyo DisneySea",
         "items": [
-          { "id": "d2_0", "time": "08:00 - 09:00", "activity": "Transfer to Disney", "desc": "Transfer from hotel to Tokyo DisneySea (Maihama, Chiba).", "img": "" },
-          { "id": "d2_1", "time": "09:00 - 16:00", "activity": "Tokyo DisneySea", "desc": "Full day exploring themed ports: Mediterranean Harbor, Mysterious Island, Arabian Coast & thrilling attractions.", "img": "" },
-          { "id": "d2_2", "time": "17:00 - 21:00", "activity": "Dinner", "desc": "Fresh kaiten-sushi dinner at Sushiro (Omorikita branch).", "img": "" },
-          { "id": "d2_3", "time": "21:00", "activity": "Return to Hotel", "desc": "Evening leisure & rest at hotel.", "img": "" }
+          { "time": "08:00 - 09:00", "activity": "Transfer to Disney", "desc": "Transfer from hotel to Tokyo DisneySea (Maihama, Chiba).", "img": "" },
+          { "time": "09:00 - 16:00", "activity": "Tokyo DisneySea", "desc": "Full day exploring themed ports: Mediterranean Harbor, Mysterious Island, Arabian Coast & thrilling attractions.", "img": "" },
+          { "time": "17:00 - 21:00", "activity": "Dinner", "desc": "Fresh kaiten-sushi dinner at Sushiro (Omorikita branch).", "img": "" },
+          { "time": "21:00", "activity": "Return to Hotel", "desc": "Evening leisure & rest at hotel.", "img": "" }
         ]
       },
       {
         "tab": "Day 3 (29/11)",
         "title": "Day 3: 29/11/2026 — Mount Fuji • Oshino Hakkai • Lake Kawaguchiko",
         "items": [
-          { "id": "d3_0", "time": "06:00 - 08:00", "activity": "Depart for Mt. Fuji", "desc": "Check out hotel; transfer from Tokyo toward Fuji Five Lakes region.", "img": "" },
-          { "id": "d3_1", "time": "08:00 - 12:00", "activity": "Fuji Heritage Tour", "desc": "Sightseeing at Honcho Street, Lake Yamanaka Boardwalk, and ancient spring village Oshino Hakkai.", "img": "" },
-          { "id": "d3_2", "time": "12:00 - 13:30", "activity": "Lunch", "desc": "Authentic Koshu Hoto Kosaku noodles (pumpkin miso noodle stew).", "img": "" },
-          { "id": "d3_3", "time": "13:30 - 16:00", "activity": "Kawaguchiko Sights", "desc": "Scenic walk at Oishi Park overlooking Mt. Fuji & photo stop at Mt. Fuji Lawson.", "img": "" },
-          { "id": "d3_4", "time": "16:30 - 18:00", "activity": "Hotel Check-in", "desc": "Check in Fuji Kawaguchiko Resort Hotel; relax with Mount Fuji view.", "img": "" },
-          { "id": "d3_5", "time": "18:00 - 20:00", "activity": "Dinner", "desc": "Charcoal-grilled BBQ/ Yakitori dinner at Sanrokuen.", "img": "" }
+          { "time": "06:00 - 08:00", "activity": "Depart for Mt. Fuji", "desc": "Check out hotel; transfer from Tokyo toward Fuji Five Lakes region.", "img": "" },
+          { "time": "08:00 - 12:00", "activity": "Fuji Heritage Tour", "desc": "Sightseeing at Honcho Street, Lake Yamanaka Boardwalk, and ancient spring village Oshino Hakkai.", "img": "" },
+          { "time": "12:00 - 13:30", "activity": "Lunch", "desc": "Authentic Koshu Hoto Kosaku noodles (pumpkin miso noodle stew).", "img": "" },
+          { "time": "13:30 - 16:00", "activity": "Kawaguchiko Sights", "desc": "Scenic walk at Oishi Park overlooking Mt. Fuji & photo stop at Mt. Fuji Lawson.", "img": "" },
+          { "time": "16:30 - 18:00", "activity": "Hotel Check-in", "desc": "Check in Fuji Kawaguchiko Resort Hotel; relax with Mount Fuji view.", "img": "" },
+          { "time": "18:00 - 20:00", "activity": "Dinner", "desc": "Charcoal-grilled BBQ/ Yakitori dinner at Sanrokuen.", "img": "" }
         ]
       },
       {
         "tab": "Day 4 (30/11)",
         "title": "Day 4: 30/11/2026 — Kawaguchiko • Matsumoto City",
         "items": [
-          { "id": "d4_0", "time": "08:00 - 11:30", "activity": "Lakeside Cycling", "desc": "Morning bike tour around Lake Kawaguchiko; lakeside coffee break (The Park Cafe / Lake Bake).", "img": "" },
-          { "id": "d4_1", "time": "11:30 - 13:00", "activity": "Lunch", "desc": "Crispy Tonkatsu / Tempura at Fuji Tempura Idaten (or Koushuya).", "img": "" },
-          { "id": "d4_2", "time": "13:30 - 16:30", "activity": "Transfer to Matsumoto", "desc": "Scenic transfer by express bus / JR train from Kawaguchiko Station to Matsumoto (Nagano).", "img": "" },
-          { "id": "d4_3", "time": "16:30 - 18:00", "activity": "Hotel Check-in", "desc": "Check in Toyoko Inn Matsumoto Station Ekimae.", "img": "" },
-          { "id": "d4_4", "time": "18:00 - 20:30", "activity": "Dinner & City Walk", "desc": "Savor Japanese Hamburger Steak (Amiya Yakiniku) & explore Matsumoto downtown.", "img": "" }
+          { "time": "08:00 - 11:30", "activity": "Lakeside Cycling", "desc": "Morning bike tour around Lake Kawaguchiko; lakeside coffee break (The Park Cafe / Lake Bake).", "img": "" },
+          { "time": "11:30 - 13:00", "activity": "Lunch", "desc": "Crispy Tonkatsu / Tempura at Fuji Tempura Idaten (or Koushuya).", "img": "" },
+          { "time": "13:30 - 16:30", "activity": "Transfer to Matsumoto", "desc": "Scenic transfer by express bus / JR train from Kawaguchiko Station to Matsumoto (Nagano).", "img": "" },
+          { "time": "16:30 - 18:00", "activity": "Hotel Check-in", "desc": "Check in Toyoko Inn Matsumoto Station Ekimae.", "img": "" },
+          { "time": "18:00 - 20:30", "activity": "Dinner & City Walk", "desc": "Savor Japanese Hamburger Steak (Amiya Yakiniku) & explore Matsumoto downtown.", "img": "" }
         ]
       },
       {
         "tab": "Day 5 (01/12)",
         "title": "Day 5: 01/12/2026 — Kamikochi Alpine Valley",
         "items": [
-          { "id": "d5_0", "time": "07:40 - 09:00", "activity": "Bus to Kamikochi", "desc": "Depart Matsumoto Bus Terminal via scenic alpine bus to Kamikochi (Chubu Sangaku National Park).", "img": "" },
-          { "id": "d5_1", "time": "09:00 - 14:00", "activity": "Kamikochi Trekking", "desc": "Nature hike along Azusa River from Taisho Pond to Kappa Bridge; admire snow-capped Alps. Lunch in valley.", "img": "" },
-          { "id": "d5_2", "time": "14:30 - 16:00", "activity": "Return to Matsumoto", "desc": "Alpine bus transfer from Kamikochi back to Matsumoto Station.", "img": "" },
-          { "id": "d5_3", "time": "18:00 - 20:30", "activity": "Dinner", "desc": "Shinshu Premium Beef yakiniku & Nagano regional specialties (Horumon Ya Kaishu).", "img": "" }
+          { "time": "07:40 - 09:00", "activity": "Bus to Kamikochi", "desc": "Depart Matsumoto Bus Terminal via scenic alpine bus to Kamikochi (Chubu Sangaku National Park).", "img": "" },
+          { "time": "09:00 - 14:00", "activity": "Kamikochi Trekking", "desc": "Nature hike along Azusa River from Taisho Pond to Kappa Bridge; admire snow-capped Alps. Lunch in valley.", "img": "" },
+          { "time": "14:30 - 16:00", "activity": "Return to Matsumoto", "desc": "Alpine bus transfer from Kamikochi back to Matsumoto Station.", "img": "" },
+          { "time": "18:00 - 20:30", "activity": "Dinner", "desc": "Shinshu Premium Beef yakiniku & Nagano regional specialties (Horumon Ya Kaishu).", "img": "" }
         ]
       },
       {
         "tab": "Day 6 (02/12)",
         "title": "Day 6: 02/12/2026 — Matsumoto Castle • Kyoto",
         "items": [
-          { "id": "d6_0", "time": "08:30 - 11:30", "activity": "Matsumoto Castle", "desc": "Tour Matsumoto Castle (National Treasure) & stroll along historic Nawate Frog Street.", "img": "" },
-          { "id": "d6_1", "time": "11:30 - 13:00", "activity": "Lunch", "desc": "Handmade Shinshu Soba noodles at Kobayashi Soba.", "img": "" },
-          { "id": "d6_2", "time": "13:30 - 16:30", "activity": "Train to Kyoto", "desc": "JR Limited Express Shinano / Shinkansen through scenic Kiso Valley to Kyoto Station.", "img": "" },
-          { "id": "d6_3", "time": "17:00 - 18:30", "activity": "Hotel Check-in", "desc": "Check in KIORI EXEC GOJO Kyoto.", "img": "" },
-          { "id": "d6_4", "time": "18:30 - 20:30", "activity": "Dinner", "desc": "Evening walk & dinner in central Kyoto (Gojo / Shijo Karasuma)." }
+          { "time": "08:30 - 11:30", "activity": "Matsumoto Castle", "desc": "Tour Matsumoto Castle (National Treasure) & stroll along historic Nawate Frog Street.", "img": "" },
+          { "time": "11:30 - 13:00", "activity": "Lunch", "desc": "Handmade Shinshu Soba noodles at Kobayashi Soba.", "img": "" },
+          { "time": "13:30 - 16:30", "activity": "Train to Kyoto", "desc": "JR Limited Express Shinano / Shinkansen through scenic Kiso Valley to Kyoto Station.", "img": "" },
+          { "time": "17:00 - 18:30", "activity": "Hotel Check-in", "desc": "Check in KIORI EXEC GOJO Kyoto.", "img": "" },
+          { "time": "18:30 - 20:30", "activity": "Dinner", "desc": "Evening walk & dinner in central Kyoto (Gojo / Shijo Karasuma)." }
         ]
       },
       {
         "tab": "Day 7 (03/12)",
         "title": "Day 7: 03/12/2026 — Arashiyama Bamboo Grove • Sagano Train",
         "items": [
-          { "id": "d7_0", "time": "08:00 - 12:00", "activity": "Arashiyama Sights", "desc": "Morning stroll in Bamboo Grove, Hozu River scenic boat tour & visit moss temple Otagi Nenbutsu-ji.", "img": "" },
-          { "id": "d7_1", "time": "12:00 - 13:30", "activity": "Lunch", "desc": "Kyoto style Udon noodles & sweets at Ogura Cha-Ya.", "img": "" },
-          { "id": "d7_2", "time": "13:30 - 16:30", "activity": "Sagano Romantic Train", "desc": "Vintage scenic train ride along Sagano romantic river gorge.", "img": "" },
-          { "id": "d7_3", "time": "17:00 - 19:30", "activity": "Shopping & Dinner", "desc": "Shijo-Kawaramachi shopping & gourmet Pizza date night (400℃ Pizza Kyoto)." }
+          { "time": "08:00 - 12:00", "activity": "Arashiyama Sights", "desc": "Morning stroll in Bamboo Grove, Hozu River scenic boat tour & visit moss temple Otagi Nenbutsu-ji.", "img": "" },
+          { "time": "12:00 - 13:30", "activity": "Lunch", "desc": "Kyoto style Udon noodles & sweets at Ogura Cha-Ya.", "img": "" },
+          { "time": "13:30 - 16:30", "activity": "Sagano Romantic Train", "desc": "Vintage scenic train ride along Sagano romantic river gorge.", "img": "" },
+          { "time": "17:00 - 19:30", "activity": "Shopping & Dinner", "desc": "Shijo-Kawaramachi shopping & gourmet Pizza date night (400℃ Pizza Kyoto)." }
         ]
       },
       {
         "tab": "Day 8 (04/12)",
         "title": "Day 8: 04/12/2026 —  Kimono Experience • Gion & Kiyomizu • Nara",
         "items": [
-          { "id": "d8_0", "time": "08:30 - 11:30", "activity": "Kimono & Ancient Kyoto", "desc": "Wear traditional Kimono; explore Ninenzaka, Sannenzaka, Gion & panoramic terrace of Kiyomizu-dera.", "img": "" },
-          { "id": "d8_1", "time": "11:30 - 13:00", "activity": "Lunch", "desc": "Charcoal-grilled Unagi Donburi (Eel Rice Bowl) at Gion Unagi Kawato.", "img": "" },
-          { "id": "d8_2", "time": "13:00 - 17:30", "activity": "Matcha lover with deers", "desc": "Visit Uji or Nara or Ine Village", "img": "" },
-          { "id": "d8_3", "time": "18:00 - 20:30", "activity": "Dinner & Souvenirs", "desc": "Kyoto farewell dinner & traditional Matcha souvenir shopping.", "img": "" }
+          { "time": "08:30 - 11:30", "activity": "Kimono & Ancient Kyoto", "desc": "Wear traditional Kimono; explore Ninenzaka, Sannenzaka, Gion & panoramic terrace of Kiyomizu-dera.", "img": "" },
+          { "time": "11:30 - 13:00", "activity": "Lunch", "desc": "Charcoal-grilled Unagi Donburi (Eel Rice Bowl) at Gion Unagi Kawato.", "img": "" },
+          { "time": "13:00 - 17:30", "activity": "Matcha lover with deers", "desc": "Visit Uji or Nara or Ine Village", "img": "" },
+          { "time": "18:00 - 20:30", "activity": "Dinner & Souvenirs", "desc": "Kyoto farewell dinner & traditional Matcha souvenir shopping.", "img": "" }
         ]
       },
       {
         "tab": "Day 9 (05/12)",
         "title": "Day 9: 05/12/2026 — Kyoto • Kansai Airport • Hanoi",
         "items": [
-          { "id": "d9_0", "time": "09:00 - 11:00", "activity": "Morning Walk & Packing", "desc": "Hotel check-out, luggage storage & final souvenir walk around Kyoto Station.", "img": "" },
-          { "id": "d9_1", "time": "11:00 - 12:30", "activity": "Lunch", "desc": "Teishoku set lunch / Gyudon at Kyoto Porta Mall.", "img": "" },
-          { "id": "d9_2", "time": "12:30 - 14:00", "activity": "Kansai Airport Express", "desc": "Board JR Haruka Airport Express from Kyoto Station to Kansai International Airport (KIX)." },
-          { "id": "d9_3", "time": "14:00 - 17:00", "activity": "Departure Flight", "desc": "Duty-free shopping, flight check-in and board flight returning to Hanoi.", "img": "" }
+          { "time": "09:00 - 11:00", "activity": "Morning Walk & Packing", "desc": "Hotel check-out, luggage storage & final souvenir walk around Kyoto Station.", "img": "" },
+          { "time": "11:00 - 12:30", "activity": "Lunch", "desc": "Teishoku set lunch / Gyudon at Kyoto Porta Mall.", "img": "" },
+          { "time": "12:30 - 14:00", "activity": "Kansai Airport Express", "desc": "Board JR Haruka Airport Express from Kyoto Station to Kansai International Airport (KIX)." },
+          { "time": "14:00 - 17:00", "activity": "Departure Flight", "desc": "Duty-free shopping, flight check-in and board flight returning to Hanoi.", "img": "" }
         ]
       }
     ];
@@ -409,8 +397,6 @@
     function parseSheet(rows) {
       let parsed = [];
       let cur = null;
-      let dayIdx = 0;
-      let itemIdx = 0;
 
       rows.forEach(r => {
         const c0 = String(r[0] || "").trim();
@@ -423,8 +409,6 @@
 
         if ((c0.toLowerCase().startsWith("day ") || c0.toLowerCase().startsWith("ngày ")) && (!c1 || c1 === "undefined")) {
           if (cur) parsed.push(cur);
-          dayIdx++;
-          itemIdx = 0;
           let tab = c0.split("—")[0].split(":")[0].trim();
           let m = c0.match(/\d{1,2}\/\d{1,2}/);
           if (m) tab += ` (${m[0]})`;
@@ -434,7 +418,6 @@
 
         if (cur && (c0 || c1)) {
           cur.items.push({
-            id: `d${dayIdx}_${itemIdx++}`,
             time: formatTime(c0),
             activity: c1 || "Hoạt động",
             desc: c2,
@@ -453,19 +436,6 @@
       if (a.includes("lunch") || a.includes("dinner")) return "var(--tag-food)";
       if (a.includes("hotel") || a.includes("check-in") || a.includes("refresh")) return "var(--tag-hotel)";
       return "var(--tag-sight)";
-    }
-
-    function handlePhotoUpload(event, itemId) {
-      const file = event.target.files[0];
-      if (file) {
-        const reader = new FileReader();
-        reader.onload = function(e) {
-          userPhotos[itemId] = e.target.result;
-          localStorage.setItem(USER_PHOTOS_KEY, JSON.stringify(userPhotos));
-          renderUI();
-        };
-        reader.readAsDataURL(file);
-      }
     }
 
     function renderUI() {
@@ -497,10 +467,9 @@
           const timeHtml = item.time ? `<span class="card-time">${item.time}</span>` : `<span class="card-time">Trong ngày</span>`;
           const badgeHtml = `<span class="badge" style="background:${tagColor}">${item.activity}</span>`;
 
-          const displayImg = userPhotos[item.id] || item.img;
           let imgHtml = "";
-          if (displayImg) {
-            imgHtml = `<div class="card-img-wrapper"><img src="${displayImg}" class="card-img" /></div>`;
+          if (item.img) {
+            imgHtml = `<div class="card-img-wrapper"><img src="${item.img}" class="card-img" /></div>`;
           }
 
           card.innerHTML = `
@@ -511,12 +480,6 @@
             <div class="card-name">${item.activity}</div>
             <div class="card-desc">${item.desc}</div>
             ${imgHtml}
-            <div>
-              <label class="upload-btn-label">
-                📷 ${displayImg ? "Đổi ảnh" : "Thêm ảnh"}
-                <input type="file" accept="image/*" class="file-input" onchange="handlePhotoUpload(event, '${item.id}')">
-              </label>
-            </div>
           `;
           cardContainer.appendChild(card);
         });
