@@ -3,49 +3,99 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-  <title>Lịch Trình Du Lịch Nhật Bản 2026</title>
+  <title>Japan Winter Tour 2026</title>
   
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <meta name="apple-mobile-web-app-title" content="Kamikochi 2026">
+  <meta name="apple-mobile-web-app-title" content="Japan Winter 2026">
+
+  <!-- Biểu tượng icon ứng dụng dạng PNG chuẩn cho iPhone -->
+  <link rel="apple-touch-icon" sizes="180x180" href="./sakura.png">
+  <link rel="icon" type="image/png" href="./sakura.png">
+
+  <!-- Thư viện SheetJS đọc file Excel -->
+  <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 
   <style>
-    :root {
-      --primary: #1D3557;
-      --accent: #E63946;
-      --accent-soft: #FDE8E9;
-      --bg: #F4F6F9;
-      --card-bg: #FFFFFF;
-      --text-main: #1D3557;
-      --text-sub: #5A6A85;
-      --border: #E8ECEF;
-      --tag-done: #2A9D8F;
-      --tag-ks: #6A4C93;
+    /* Nhúng font Aptos */
+    @font-face {
+      font-family: 'Aptos';
+      src: local('Aptos'),
+           url('https://cdn.jsdelivr.net/gh/idursun/aptos-font@main/Aptos.ttf') format('truetype');
+      font-weight: 400;
+      font-style: normal;
+    }
+    @font-face {
+      font-family: 'Aptos';
+      src: local('Aptos-Bold'),
+           url('https://cdn.jsdelivr.net/gh/idursun/aptos-font@main/Aptos-Bold.ttf') format('truetype');
+      font-weight: 700;
+      font-style: normal;
     }
 
-    * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
+    :root {
+      --primary: #901f3b;               /* Đỏ rượu chủ đạo */
+      --primary-gradient: linear-gradient(135deg, #901f3b 0%, #b83252 100%);
+      --accent: #901f3b;
+      --accent-soft: #F9EBEF;
+      --bg: #F8F9FA;
+      --card-bg: #FFFFFF;
+      --text-main: #2B2D42;
+      --text-sub: #6C757D;
+      --border: #EDE0E4;
+      --tag-flight: #3D5A80;
+      --tag-food: #D00000;
+      --tag-hotel: #5C3D75;
+      --tag-sight: #901f3b;
+      --link-color: #1976D2;
+    }
+
+    * { 
+      box-sizing: border-box; 
+      margin: 0; 
+      padding: 0; 
+      font-family: 'Aptos', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; 
+    }
     body { background-color: var(--bg); color: var(--text-main); padding-bottom: 50px; -webkit-tap-highlight-color: transparent; }
 
-    /* Header iPhone Style */
     header {
-      background: linear-gradient(135deg, #1D3557 0%, #457B9D 100%);
+      background: var(--primary-gradient);
       color: white;
-      padding: calc(env(safe-area-inset-top, 20px) + 14px) 16px 14px;
+      padding: calc(env(safe-area-inset-top, 20px) + 12px) 16px 12px;
       position: sticky;
       top: 0;
       z-index: 100;
-      box-shadow: 0 4px 15px rgba(0,0,0,0.08);
-      text-align: center;
+      box-shadow: 0 4px 15px rgba(144, 31, 59, 0.2);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
     }
-    .header-title { font-size: 18px; font-weight: 700; letter-spacing: 0.3px; }
-    .header-sub { font-size: 12px; opacity: 0.85; margin-top: 3px; font-weight: 400; }
+    .header-info { text-align: left; }
+    .header-title { font-size: 17px; font-weight: 700; letter-spacing: 0.3px; }
+    .sync-badge {
+      font-size: 11px;
+      display: inline-block;
+      margin-top: 3px;
+      padding: 2px 8px;
+      border-radius: 10px;
+      background: rgba(255,255,255,0.22);
+    }
+    .refresh-btn {
+      background: rgba(255,255,255,0.25);
+      border: 1px solid rgba(255,255,255,0.4);
+      color: white;
+      padding: 6px 12px;
+      border-radius: 16px;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+    }
 
-    /* Tabs Bar dạng cuộn ngang */
     .tabs-bar {
       background: #FFFFFF;
       border-bottom: 1px solid var(--border);
       position: sticky;
-      top: calc(env(safe-area-inset-top, 20px) + 61px);
+      top: calc(env(safe-area-inset-top, 20px) + 57px);
       z-index: 99;
       overflow-x: auto;
       white-space: nowrap;
@@ -58,7 +108,7 @@
     .tabs-bar::-webkit-scrollbar { display: none; }
 
     .tab-item {
-      background: #EDF2F7;
+      background: #F1F3F5;
       border: 1px solid transparent;
       padding: 8px 16px;
       border-radius: 24px;
@@ -70,18 +120,16 @@
       transition: all 0.2s ease;
     }
     .tab-item.active {
-      background: var(--accent);
+      background: var(--primary);
       color: #FFFFFF;
-      box-shadow: 0 3px 10px rgba(230, 57, 70, 0.3);
+      box-shadow: 0 3px 10px rgba(144, 31, 59, 0.35);
     }
 
-    /* Khung nội dung */
     .content-box { max-width: 550px; margin: 0 auto; padding: 16px; }
 
-    /* Tiêu đề ngày */
     .day-banner {
       background: #FFFFFF;
-      border-left: 4px solid var(--accent);
+      border-left: 4px solid var(--primary);
       padding: 12px 14px;
       border-radius: 8px;
       margin-bottom: 16px;
@@ -89,7 +137,6 @@
     }
     .day-banner-title { font-size: 14px; font-weight: 700; color: var(--text-main); line-height: 1.4; }
 
-    /* Timeline Card */
     .timeline { position: relative; padding-left: 18px; }
     .timeline::before {
       content: '';
@@ -98,7 +145,7 @@
       top: 14px;
       bottom: 14px;
       width: 2px;
-      background: #D8E2DC;
+      background: #E5D5DA;
     }
 
     .card {
@@ -106,7 +153,7 @@
       background: var(--card-bg);
       border-radius: 12px;
       padding: 14px;
-      margin-bottom: 12px;
+      margin-bottom: 14px;
       box-shadow: 0 2px 8px rgba(0,0,0,0.03);
       border: 1px solid var(--border);
     }
@@ -118,15 +165,15 @@
       width: 8px;
       height: 8px;
       border-radius: 50%;
-      background: var(--accent);
+      background: var(--primary);
       border: 2px solid #FFF;
-      box-shadow: 0 0 0 1px #D8E2DC;
+      box-shadow: 0 0 0 1px #E5D5DA;
     }
 
     .card-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; }
     .card-time {
-      background: #EBF2F7;
-      color: #2B4C6F;
+      background: var(--accent-soft);
+      color: var(--primary);
       font-size: 11px;
       font-weight: 700;
       padding: 3px 8px;
@@ -138,161 +185,212 @@
       padding: 2px 7px;
       border-radius: 6px;
       text-transform: uppercase;
+      color: white;
     }
-    .badge-done { background: #E8F5E9; color: var(--tag-done); }
-    .badge-ks { background: #F3E8FF; color: var(--tag-ks); }
-    .badge-other { background: #FFF3CD; color: #856404; }
 
-    .card-name { font-size: 14px; font-weight: 700; color: #1A202C; margin-bottom: 4px; line-height: 1.35; }
-    .card-desc { font-size: 12px; color: #4A5568; margin-bottom: 4px; line-height: 1.4; word-break: break-word; }
-    .card-desc a { color: var(--accent); text-decoration: underline; }
-
-    .card-foot {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-top: 8px;
-      padding-top: 8px;
-      border-top: 1px dashed var(--border);
-      font-size: 11px;
+    .card-name { font-size: 15px; font-weight: 700; color: #1A202C; margin-bottom: 4px; line-height: 1.35; }
+    
+    /* Description & Note styling */
+    .card-desc { font-size: 13px; color: #4A5568; line-height: 1.45; word-break: break-word; }
+    
+    .card-note { 
+      font-size: 13px; 
+      color: #4A5568; 
+      line-height: 1.45; 
+      margin-top: 4px; 
+      word-break: break-word; 
     }
-    .card-price { font-weight: 700; color: var(--accent); }
-    .card-note { color: var(--text-sub); font-style: italic; }
+    .card-note a {
+      color: var(--link-color);
+      text-decoration: underline;
+      text-underline-offset: 2px;
+      font-weight: 500;
+      word-break: break-word;
+    }
+    .card-note a:active { opacity: 0.7; }
+
+    /* Khung ảnh tỷ lệ 1920x1080 (16:9), tự crop chuẩn */
+    .card-img-wrapper {
+      margin-top: 10px;
+      border-radius: 10px;
+      overflow: hidden;
+      width: 100%;
+      aspect-ratio: 16 / 9;
+      background: #ECEFF1;
+    }
+    .card-img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center;
+      display: block;
+    }
+
+    .loading-msg {
+      text-align: center;
+      padding: 40px 20px;
+      color: var(--text-sub);
+      font-size: 14px;
+    }
   </style>
 </head>
 <body>
 
   <header>
-    <div class="header-title">LỊCH TRÌNH NHẬT BẢN 2026</div>
-    <div class="header-sub">Bản Xem Trước • Tuyến Kamikochi</div>
+    <div class="header-info">
+      <div class="header-title">JAPAN WINTER TOUR 2026</div>
+      <div class="sync-badge" id="syncStatus">Đang tải lịch trình...</div>
+    </div>
+    <button class="refresh-btn" onclick="syncOnline(true)">Cập nhật ⟳</button>
   </header>
 
   <div class="tabs-bar" id="tabsList"></div>
 
   <div class="content-box">
-    <div class="day-banner">
+    <div class="day-banner" id="dayBanner">
       <div class="day-banner-title" id="dayFullTitle"></div>
     </div>
     <div class="timeline" id="timelineCards"></div>
   </div>
 
   <script>
-    // Dữ liệu bóc tách đầy đủ 9 ngày từ file TOUR NHẬT BẢN 2026.xlsx
-    const tripData = [
-      {
-        tab: "Ngày 1 (27/11)",
-        title: "Ngày 1: 27/11/2025 - Thứ 6 - XUẤT PHÁT TỪ HÀ NỘI + ODAIBA",
-        items: [
-          { time: "00:55 - 08:00", name: "Bay HAN - NRT", desc: "", cost: "8,317,000 VND (~16,634,000 đ)", note: "Done", badge: "DC" },
-          { time: "08:00 - 09:30", name: "Check in NRT", desc: "", cost: "", note: "", badge: "" },
-          { time: "09:40 - 10:40", name: "NRT - Otaku", desc: "Skyliner", cost: "3,000 JPY (~1,002,000 đ)", note: "", badge: "" },
-          { time: "11:00 - 14:00", name: "Ăn trưa - Cơm cà ri", desc: "Coco Ichibanya", cost: "2,000 JPY (~668,000 đ)", note: "", badge: "Nhỏ" },
-          { time: "11:00 - 13:00", name: "Khách sạn Otaku", desc: "", cost: "1,990,000 VND (~3,980,000 đ)", note: "Heiwajima Station", badge: "KS" },
-          { time: "13:15 - 14:00", name: "Otaku - Odaiba", desc: "", cost: "800 JPY (~267,200 đ)", note: "", badge: "" },
-          { time: "14:00 - 16:30", name: "Bảo tàng Miraikan/ or Tokyo Disaster Prevention Park", desc: "https://www.miraikan.jst.go.jp/", cost: "940 JPY (~313,960 đ)", note: "", badge: "" },
-          { time: "16:30 - 17:30", name: "Hoàng hôn Odaiba Seaside Park", desc: "", cost: "", note: "", badge: "" },
-          { time: "18:00 - 19:30", name: "Ăn tối - Monjayaki", desc: "", cost: "5,000 JPY (~1,670,000 đ)", note: "", badge: "Ăn" },
-          { time: "21:00 - 21:30", name: "Odaiba - Otaku", desc: "", cost: "800 JPY (~267,200 đ)", note: "", badge: "" },
-          { time: "22:00", name: "Mua đồ ăn sáng", desc: "Family Mart", cost: "1,000 JPY (~334,000 đ)", note: "", badge: "" },
-          { time: "", name: "-Shinjuku Cat Café", desc: "Hoạt động dự phòng nếu có sức", cost: "", note: "", badge: "" },
-          { time: "", name: "Alpen tokyo", desc: "Hoạt động dự phòng nếu có sức", cost: "", note: "", badge: "" },
-          { time: "", name: "- 3D Cat Cross Shinjuku Space", desc: "Hoạt động dự phòng nếu có sức", cost: "", note: "", badge: "" }
-        ]
-      },
-      {
-        tab: "Ngày 2 (28/11)",
-        title: "Ngày 2: 28/11/2025 - Thứ 7 - TOKYO DISNEY SEA",
-        items: [
-          { time: "07:30 - 08:30", name: "Otaku - Tokyo Disney", desc: "", cost: "1,000 JPY (~334,000 đ)", note: "", badge: "" },
-          { time: "08:30 - 21:00", name: "Tokyo Disney Sea", desc: "https://www.tokyodisneyresort.jp/en/tds/", cost: "8,900 JPY (~2,972,600 đ)", note: "Done", badge: "Vé" },
-          { time: "12:00 - 13:00", name: "Ăn trưa trong công viên", desc: "", cost: "2,000 JPY (~668,000 đ)", note: "", badge: "" },
-          { time: "18:30 - 19:30", name: "Ăn tối trong công viên", desc: "", cost: "2,000 JPY (~668,000 đ)", note: "", badge: "" },
-          { time: "21:00 - 22:00", name: "Tokyo Disney - Otaku", desc: "", cost: "1,000 JPY (~334,000 đ)", note: "", badge: "" },
-          { time: "22:00", name: "Mua đồ ăn sáng", desc: "Family Mart", cost: "1,000 JPY (~334,000 đ)", note: "", badge: "" }
-        ]
-      },
-      {
-        tab: "Ngày 3 (29/11)",
-        title: "Ngày 3: 29/11/2025 - PHÚ SĨ 2 NGÀY 1 ĐÊM",
-        items: [
-          { time: "07:30 - 08:00", name: "Check out Otaku - Shinjuku", desc: "", cost: "500 JPY (~167,000 đ)", note: "", badge: "" },
-          { time: "08:15 - 10:00", name: "Shinjuku - Kawaguchiko", desc: "Bus cao tốc", cost: "2,200 JPY (~734,800 đ)", note: "", badge: "Bus" },
-          { time: "10:30 - 12:00", name: "Ăn trưa Mì Houtou", desc: "Houtou Fudou Kawaguchiko", cost: "2,000 JPY (~668,000 đ)", note: "", badge: "" },
-          { time: "12:00 - 15:00", name: "Hồ Kawaguchiko & Cáp treo Mt. Fuji Panoramic", desc: "", cost: "1,000 JPY (~334,000 đ)", note: "", badge: "" },
-          { time: "15:30 - 17:30", name: "Làng cổ Oshino Hakkai", desc: "8 hồ nước tuyết tan", cost: "", note: "", badge: "" },
-          { time: "18:00 - 20:30", name: "Check in Khách sạn Phú Sĩ", desc: "Nghỉ ngơi onsen & ăn tối", cost: "3,500,000 VND (~7,000,000 đ)", note: "", badge: "KS" }
-        ]
-      },
-      {
-        tab: "Ngày 4 (30/11)",
-        title: "Ngày 4: 30/11/2025 - NGHỈ SÁNG FUJI HIDDEN PLACES, ĐI MATSUMOTO",
-        items: [
-          { time: "06:00 - 07:30", name: "Bình minh Phú Sĩ & Ăn sáng", desc: "", cost: "", note: "", badge: "" },
-          { time: "08:30 - 10:30", name: "Chùa Chureito Pagoda (Arakurayama)", desc: "Góc ngắm núi Phú Sĩ", cost: "", note: "", badge: "" },
-          { time: "11:00 - 12:30", name: "Phố cổ Shimoyoshida (Honcho Street)", desc: "", cost: "", note: "", badge: "" },
-          { time: "13:30 - 16:30", name: "Kawaguchiko ➔ Matsumoto", desc: "Tàu tốc hành Limited Express Chuo Line", cost: "4,500 JPY (~1,503,000 đ)", note: "", badge: "Train" },
-          { time: "17:00 - 18:30", name: "Check in Khách sạn Matsumoto", desc: "", cost: "1,500,000 VND (~3,000,000 đ)", note: "", badge: "KS" },
-          { time: "19:00 - 21:00", name: "Ăn tối đặc sản Nagano & Phố Nawate", desc: "", cost: "2,500 JPY (~835,000 đ)", note: "", badge: "" }
-        ]
-      },
-      {
-        tab: "Ngày 5 (01/12)",
-        title: "Ngày 5: 1/12/2025 - KAMIKOCHI",
-        items: [
-          { time: "06:00 - 07:45", name: "Matsumoto ➔ Thung lũng Kamikochi", desc: "Tàu điện Shin-Shimashima + Bus trung chuyển", cost: "2,710 JPY (~905,140 đ)", note: "Vé khứ hồi", badge: "Bus" },
-          { time: "08:00 - 10:30", name: "Hồ Taisho ➔ Cầu Kappa (Kappabashi)", desc: "Trekking dọc bờ suối Azusa ngắm dãy Alps phủ tuyết", cost: "", note: "", badge: "" },
-          { time: "11:00 - 12:30", name: "Ăn trưa khu vực Cầu Kappa", desc: "Thưởng thức set cơm cá suối nướng", cost: "2,000 JPY (~668,000 đ)", note: "", badge: "" },
-          { time: "13:00 - 15:30", name: "Hồ Myojin & Đền Hotaka", desc: "Khám phá vùng lõi rừng linh thiêng", cost: "500 JPY (~167,000 đ)", note: "", badge: "Vé" },
-          { time: "16:00 - 18:00", name: "Kamikochi về lại ga Matsumoto", desc: "Bus chiều về", cost: "", note: "", badge: "" }
-        ]
-      },
-      {
-        tab: "Ngày 6 (02/12)",
-        title: "Ngày 6: 2/12/2025 - MATSUMOTO - KYOTO",
-        items: [
-          { time: "08:30 - 11:00", name: "Tham quan Lâu đài Matsumoto", desc: "Quốc bảo lâu đài quạ đen nguyên bản", cost: "700 JPY (~233,800 đ)", note: "", badge: "Vé" },
-          { time: "11:30 - 14:30", name: "Tàu Shinano + Shinkansen đi Kyoto", desc: "Matsumoto ➔ Nagoya ➔ Kyoto", cost: "10,500 JPY (~3,507,000 đ)", note: "", badge: "Tàu" },
-          { time: "15:00 - 16:30", name: "Check-in Khách sạn Kyoto", desc: "", cost: "2,100,000 VND (~4,200,000 đ)", note: "", badge: "KS" },
-          { time: "17:30 - 20:30", name: "Dạo khu Gion & Phố cổ Pontocho", desc: "Ăn tối thịt nướng / mì soba", cost: "3,000 JPY (~1,002,000 đ)", note: "", badge: "" }
-        ]
-      },
-      {
-        tab: "Ngày 7 (03/12)",
-        title: "Ngày 7: 3/12/2025 - ĐI NGẮM LÁ ĐỎ Ở RỪNG TRÚC",
-        items: [
-          { time: "07:30 - 09:30", name: "Rừng trúc Arashiyama & Cầu Togetsukyo", desc: "Ngắm lá đỏ mùa thu Kyoto", cost: "", note: "", badge: "" },
-          { time: "09:30 - 11:30", name: "Chùa Tenryu-ji & Vườn Sogenchi", desc: "Khu vườn di sản ngắm lá phong đỏ rực", cost: "800 JPY (~267,200 đ)", note: "", badge: "Vé" },
-          { time: "12:00 - 13:30", name: "Ăn trưa đậu phụ Tofu Arashiyama", desc: "", cost: "2,000 JPY (~668,000 đ)", note: "", badge: "" },
-          { time: "14:30 - 17:00", name: "Chùa Thanh Thủy Kiyomizu-dera", desc: "Khán đài gỗ ngắm toàn cảnh Kyoto lúc hoàng hôn", cost: "400 JPY (~133,600 đ)", note: "", badge: "Vé" },
-          { time: "18:00 - 20:30", name: "Ăn tối ẩm thực Chợ Nishiki", desc: "", cost: "2,500 JPY (~835,000 đ)", note: "", badge: "" }
-        ]
-      },
-      {
-        tab: "Ngày 8 (04/12)",
-        title: "Ngày 8: 4/12/2025 - ĐI CHÙA KATSUOJI - CẦU NGUYỆN",
-        items: [
-          { time: "08:00 - 09:30", name: "Kyoto ➔ Minoh (Osaka)", desc: "Tàu Hankyu", cost: "900 JPY (~300,600 đ)", note: "", badge: "" },
-          { time: "10:00 - 13:30", name: "Chùa búp bê may mắn Katsuo-ji", desc: "Ngôi chùa nổi tiếng với búp bê Daruma đỏ", cost: "500 JPY (~167,000 đ)", note: "", badge: "Vé" },
-          { time: "14:30 - 17:00", name: "Dạo phố Dotonbori - Namba", desc: "Chụp hình biển hiệu Glico Man, mua sắm", cost: "", note: "", badge: "" },
-          { time: "18:00 - 21:00", name: "Ăn tối tiệc chia tay: Bò Wagyu / Takoyaki", desc: "", cost: "4,000 JPY (~1,336,000 đ)", note: "", badge: "" }
-        ]
-      },
-      {
-        tab: "Ngày 9 (05/12)",
-        title: "Ngày 9: 5/12/2025 - ĐI VỀ HÀ NỘI",
-        items: [
-          { time: "07:30 - 08:30", name: "Check out khách sạn Osaka", desc: "Sắp xếp hành lý", cost: "", note: "", badge: "" },
-          { time: "09:00 - 10:15", name: "Tàu Nankai Rapi:t ra Sân bay Kansai (KIX)", desc: "", cost: "1,450 JPY (~484,300 đ)", note: "", badge: "Tàu" },
-          { time: "10:30 - 14:00", name: "Thủ tục xuất cảnh KIX & Bay về Nội Bài (HAN)", desc: "Kết thúc chuyến đi an toàn", cost: "", note: "Done", badge: "Bay" }
-        ]
-      }
-    ];
+    const LOCAL_FILE = "./japantour.xlsx";
+    const SHAREPOINT_FILE = "https://bscvn-my.sharepoint.com/:x:/g/personal/minhpq_bsc_com_vn/IQCHNDjCKlC5S4w9i-w0x3OiAVVX9bXIhQsYTux5-12K7tg?e=Pbu1oa&download=1";
+    const CACHE_KEY = "japan_trip_last_saved_note_v1";
 
+    let tripData = [];
     let activeIndex = 0;
+
+    function init() {
+      const cached = localStorage.getItem(CACHE_KEY);
+      if (cached) {
+        try { 
+          tripData = JSON.parse(cached); 
+          document.getElementById("syncStatus").innerText = "Đã lưu trong máy ✓";
+        } catch(e) { 
+          tripData = []; 
+        }
+      }
+      renderUI();
+      syncOnline(false);
+    }
+
+    async function syncOnline(isManual) {
+      const badge = document.getElementById("syncStatus");
+      if (isManual) badge.innerText = "Đang kiểm tra...";
+
+      let arrayBuffer = null;
+      try {
+        let res = await fetch(LOCAL_FILE);
+        if (res.ok) arrayBuffer = await res.arrayBuffer();
+      } catch (e) {}
+
+      if (!arrayBuffer) {
+        try {
+          let proxy = "https://api.allorigins.win/raw?url=" + encodeURIComponent(SHAREPOINT_FILE);
+          let res = await fetch(proxy);
+          if (res.ok) arrayBuffer = await res.arrayBuffer();
+        } catch (e) {}
+      }
+
+      if (arrayBuffer) {
+        try {
+          const workbook = XLSX.read(arrayBuffer, { type: 'array' });
+          const sheet = workbook.Sheets["2026"] || workbook.Sheets[workbook.SheetNames[0]];
+          const rows = XLSX.utils.sheet_to_json(sheet, { header: 1, defval: "" });
+          const parsed = parseSheet(rows);
+          if (parsed && parsed.length > 0) {
+            tripData = parsed;
+            localStorage.setItem(CACHE_KEY, JSON.stringify(parsed));
+            renderUI();
+            badge.innerText = "Đã lưu bản mới nhất ✓";
+            return;
+          }
+        } catch(err) {}
+      }
+
+      if (tripData.length > 0) {
+        badge.innerText = "Chế độ xem Offline ✓";
+      } else {
+        badge.innerText = "Không tải được file Excel";
+      }
+    }
+
+    function formatTime(val) {
+      if (!val) return "";
+      if (typeof val === 'number') {
+        let sec = Math.round(val * 86400);
+        let h = Math.floor(sec / 3600);
+        let m = Math.floor((sec % 3600) / 60);
+        return `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}`;
+      }
+      let s = String(val).trim();
+      return (s.includes(":") && s.length === 8) ? s.substring(0, 5) : s;
+    }
+
+    function parseSheet(rows) {
+      let parsed = [];
+      let cur = null;
+
+      rows.forEach(r => {
+        const c0 = String(r[0] || "").trim(); // Time
+        const c1 = String(r[1] || "").trim(); // Activity
+        const c2 = String(r[2] || "").trim(); // Description
+        const c3 = String(r[3] || "").trim(); // Note
+        const c4 = String(r[4] || "").trim(); // Image
+        const c5 = String(r[5] || "").trim(); // Link
+
+        if (!c0 && !c1 && !c2 && !c3) return;
+        if (c0.toLowerCase() === "time" && c1.toLowerCase() === "activity") return;
+
+        if ((c0.toLowerCase().startsWith("day ") || c0.toLowerCase().startsWith("ngày ")) && (!c1 || c1 === "undefined")) {
+          if (cur) parsed.push(cur);
+          let tab = c0.split("—")[0].split(":")[0].trim();
+          let m = c0.match(/\d{1,2}\/\d{1,2}/);
+          if (m) tab += ` (${m[0]})`;
+          cur = { tab: tab, title: c0, items: [] };
+          return;
+        }
+
+        if (cur && (c0 || c1)) {
+          cur.items.push({
+            time: formatTime(c0),
+            activity: c1 || "Hoạt động",
+            desc: c2,
+            note: c3,
+            img: c4,
+            link: c5
+          });
+        }
+      });
+
+      if (cur) parsed.push(cur);
+      return parsed;
+    }
+
+    function getTagColor(act) {
+      let a = (act || "").toLowerCase();
+      if (a.includes("flight") || a.includes("transfer") || a.includes("train") || a.includes("bus")) return "var(--tag-flight)";
+      if (a.includes("lunch") || a.includes("dinner")) return "var(--tag-food)";
+      if (a.includes("hotel") || a.includes("check-in") || a.includes("refresh")) return "var(--tag-hotel)";
+      return "var(--tag-sight)";
+    }
 
     function renderUI() {
       const tabsBar = document.getElementById("tabsList");
+      const cardContainer = document.getElementById("timelineCards");
+      const bannerTitle = document.getElementById("dayFullTitle");
+      const banner = document.getElementById("dayBanner");
+
       tabsBar.innerHTML = "";
+
+      if (!tripData || tripData.length === 0) {
+        banner.style.display = "none";
+        cardContainer.innerHTML = `<div class="loading-msg">Đang đồng bộ dữ liệu từ Excel...</div>`;
+        return;
+      }
+
+      banner.style.display = "block";
 
       tripData.forEach((day, idx) => {
         const btn = document.createElement("button");
@@ -307,55 +405,53 @@
       });
 
       const activeDay = tripData[activeIndex];
-      document.getElementById("dayFullTitle").innerText = activeDay.title;
+      if (activeDay) {
+        bannerTitle.innerText = activeDay.title;
+        cardContainer.innerHTML = "";
 
-      const cardContainer = document.getElementById("timelineCards");
-      cardContainer.innerHTML = "";
+        activeDay.items.forEach(item => {
+          const card = document.createElement("div");
+          card.className = "card";
+          const tagColor = getTagColor(item.activity);
+          const timeHtml = item.time ? `<span class="card-time">${item.time}</span>` : `<span class="card-time">Trong ngày</span>`;
+          const badgeHtml = `<span class="badge" style="background:${tagColor}">${item.activity}</span>`;
 
-      activeDay.items.forEach(item => {
-        const card = document.createElement("div");
-        card.className = "card";
+          const descHtml = item.desc ? `<div class="card-desc">${item.desc}</div>` : "";
 
-        let badgeClass = "badge-other";
-        if (item.badge === "Done" || item.note === "Done") badgeClass = "badge-done";
-        else if (item.badge === "KS") badgeClass = "badge-ks";
-
-        const badgeHtml = item.badge ? `<span class="badge ${badgeClass}">${item.badge}</span>` : "";
-        const timeHtml = item.time ? `<span class="card-time">${item.time}</span>` : `<span class="card-time">Trong ngày</span>`;
-
-        let descHtml = "";
-        if (item.desc) {
-          if (item.desc.startsWith("http")) {
-            descHtml = `<div class="card-desc"><a href="${item.desc}" target="_blank">🔗 Mở link thông tin chi tiết</a></div>`;
-          } else {
-            descHtml = `<div class="card-desc">${item.desc}</div>`;
+          let noteHtml = "";
+          if (item.note) {
+            if (item.link) {
+              let validLink = item.link.trim();
+              if (!validLink.startsWith("http://") && !validLink.startsWith("https://")) {
+                validLink = "https://" + validLink;
+              }
+              noteHtml = `<div class="card-note"><a href="${validLink}" target="_blank" rel="noopener noreferrer">${item.note} ↗</a></div>`;
+            } else {
+              noteHtml = `<div class="card-note">${item.note}</div>`;
+            }
           }
-        }
 
-        let footHtml = "";
-        if (item.cost || item.note) {
-          footHtml = `
-            <div class="card-foot">
-              <span class="card-price">${item.cost || ""}</span>
-              <span class="card-note">${item.note || ""}</span>
+          let imgHtml = "";
+          if (item.img) {
+            imgHtml = `<div class="card-img-wrapper"><img src="${item.img}" class="card-img" /></div>`;
+          }
+
+          card.innerHTML = `
+            <div class="card-head">
+              ${timeHtml}
+              ${badgeHtml}
             </div>
+            <div class="card-name">${item.activity}</div>
+            ${descHtml}
+            ${noteHtml}
+            ${imgHtml}
           `;
-        }
-
-        card.innerHTML = `
-          <div class="card-head">
-            ${timeHtml}
-            ${badgeHtml}
-          </div>
-          <div class="card-name">${item.name}</div>
-          ${descHtml}
-          ${footHtml}
-        `;
-        cardContainer.appendChild(card);
-      });
+          cardContainer.appendChild(card);
+        });
+      }
     }
 
-    renderUI();
+    init();
   </script>
 </body>
 </html>
