@@ -1,373 +1,446 @@
 <!DOCTYPE html>
-<html lang="vi">
+<html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
   <title>Japan Winter Tour 2026</title>
   
   <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
   <meta name="apple-mobile-web-app-title" content="Japan Winter 2026">
 
-  <!-- Biểu tượng icon ứng dụng dạng PNG chuẩn cho iPhone -->
   <link rel="apple-touch-icon" sizes="180x180" href="./sakura.png">
   <link rel="icon" type="image/png" href="./sakura.png">
 
-  <!-- Thư viện SheetJS đọc file Excel -->
+  <!-- SheetJS -->
   <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 
   <style>
-    /* Nhúng font Aptos */
     @font-face {
       font-family: 'Aptos';
       src: local('Aptos'),
+           local('Aptos Display'),
            url('https://cdn.jsdelivr.net/gh/idursun/aptos-font@main/Aptos.ttf') format('truetype');
       font-weight: 400;
       font-style: normal;
+      font-display: swap;
     }
     @font-face {
       font-family: 'Aptos';
       src: local('Aptos-Bold'),
+           local('Aptos Display Bold'),
            url('https://cdn.jsdelivr.net/gh/idursun/aptos-font@main/Aptos-Bold.ttf') format('truetype');
       font-weight: 700;
       font-style: normal;
+      font-display: swap;
+    }
+    @font-face {
+      font-family: 'Aptos';
+      src: local('Aptos-SemiBold'),
+           url('https://cdn.jsdelivr.net/gh/idursun/aptos-font@main/Aptos-SemiBold.ttf') format('truetype');
+      font-weight: 600;
+      font-style: normal;
+      font-display: swap;
     }
 
     :root {
-      --primary: #901f3b;               /* Đỏ rượu chủ đạo */
-      --primary-gradient: linear-gradient(135deg, #901f3b 0%, #b83252 100%);
-      --accent: #901f3b;
-      --accent-soft: #F9EBEF;
-      --bg: #F8F9FA;
-      --card-bg: #FFFFFF;
-      --text-main: #2B2D42;
-      --text-sub: #6C757D;
-      --border: #EDE0E4;
-      --tag-flight: #3D5A80;
-      --tag-food: #D00000;
-      --tag-hotel: #5C3D75;
-      --tag-sight: #901f3b;
-      --link-color: #1976D2;
+      --primary: #901f3b;
+      --primary-gradient: linear-gradient(180deg, #a52443 0%, #901f3b 100%);
+      --primary-soft: rgba(253, 242, 244, 0.85);
+      --primary-border: rgba(249, 213, 219, 0.9);
+
+      /* iOS Liquid Glass Tokens */
+      --bg: #F2F5F8;
+      --liquid-glass-bg: linear-gradient(145deg, rgba(255, 255, 255, 0.82) 0%, rgba(255, 255, 255, 0.58) 100%);
+      --liquid-glass-border: rgba(255, 255, 255, 0.95);
+      --liquid-glass-shadow: 
+        inset 0 1px 1.5px 0 rgba(255, 255, 255, 0.95),
+        inset 0 -1px 1px 0 rgba(0, 0, 0, 0.02),
+        0 8px 24px -4px rgba(15, 23, 42, 0.06),
+        0 2px 6px -1px rgba(15, 23, 42, 0.03);
+
+      --text-main: #0F172A;
+      --text-sub: #64748B;
     }
 
     * { 
       box-sizing: border-box; 
       margin: 0; 
       padding: 0; 
-      font-family: 'Aptos', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; 
+      font-family: 'Aptos', -apple-system, BlinkMacSystemFont, "SF Pro Display", sans-serif; 
     }
-    body { background-color: var(--bg); color: var(--text-main); padding-bottom: 50px; -webkit-tap-highlight-color: transparent; }
+    
+    body { 
+      background-color: var(--bg);
+      color: var(--text-main); 
+      padding-bottom: 70px; 
+      -webkit-tap-highlight-color: transparent; 
+      min-height: 100vh;
+    }
 
+    /* Floating Island Header with iOS Liquid Glass */
     header {
-      background: var(--primary-gradient);
-      color: white;
-      padding: calc(env(safe-area-inset-top, 20px) + 12px) 16px 12px;
       position: sticky;
       top: 0;
       z-index: 100;
-      box-shadow: 0 4px 15px rgba(144, 31, 59, 0.2);
+      padding: calc(env(safe-area-inset-top, 20px) + 8px) 14px 10px;
+      background: rgba(242, 245, 248, 0.75);
+      backdrop-filter: blur(28px) saturate(190%);
+      -webkit-backdrop-filter: blur(28px) saturate(190%);
+    }
+    .header-island {
+      background: var(--liquid-glass-bg);
+      border: 1px solid var(--liquid-glass-border);
+      box-shadow: var(--liquid-glass-shadow);
+      border-radius: 22px;
+      padding: 11px 16px;
       display: flex;
       justify-content: space-between;
       align-items: center;
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
     }
     .header-info { text-align: left; }
-    .header-title { font-size: 17px; font-weight: 700; letter-spacing: 0.3px; }
-    .sync-badge {
-      font-size: 11px;
-      display: inline-block;
-      margin-top: 3px;
-      padding: 2px 8px;
-      border-radius: 10px;
-      background: rgba(255,255,255,0.22);
+    .header-subtext {
+      font-size: 10px;
+      font-weight: 600;
+      color: var(--text-sub);
+      text-transform: uppercase;
+      letter-spacing: 0.6px;
     }
+    .header-title { 
+      font-size: 16px; 
+      font-weight: 700; 
+      color: var(--primary);
+      letter-spacing: 0.3px; 
+      line-height: 1.25;
+      margin-top: 1px;
+    }
+
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .sync-pill {
+      font-size: 11px;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 5px 12px;
+      border-radius: 20px;
+      background: var(--primary-soft);
+      color: var(--primary);
+      font-weight: 600;
+      border: 1px solid var(--primary-border);
+      box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.8);
+      white-space: nowrap;
+    }
+    .status-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--primary);
+      flex-shrink: 0;
+    }
+
     .refresh-btn {
-      background: rgba(255,255,255,0.25);
-      border: 1px solid rgba(255,255,255,0.4);
-      color: white;
-      padding: 6px 12px;
+      background: linear-gradient(180deg, rgba(255, 255, 255, 0.95) 0%, rgba(245, 247, 250, 0.8) 100%);
+      border: 1px solid rgba(255, 255, 255, 0.9);
+      color: var(--primary);
+      padding: 6px 13px;
       border-radius: 16px;
       font-size: 12px;
       font-weight: 600;
       cursor: pointer;
+      box-shadow: inset 0 1px 1px #FFFFFF, 0 2px 6px rgba(15, 23, 42, 0.04);
+      transition: all 0.2s ease;
+      white-space: nowrap;
+    }
+    .refresh-btn:active {
+      transform: scale(0.95);
+      background: var(--primary-soft);
     }
 
-    .tabs-bar {
-      background: #FFFFFF;
-      border-bottom: 1px solid var(--border);
+    /* iOS Segmented Track Tabs */
+    .tabs-bar-wrapper {
       position: sticky;
-      top: calc(env(safe-area-inset-top, 20px) + 57px);
+      top: calc(env(safe-area-inset-top, 20px) + 68px);
       z-index: 99;
+      padding: 6px 14px 10px;
+      background: rgba(242, 245, 248, 0.75);
+      backdrop-filter: blur(28px) saturate(190%);
+      -webkit-backdrop-filter: blur(28px) saturate(190%);
+    }
+    .tabs-bar {
+      background: linear-gradient(180deg, rgba(255, 255, 255, 0.6) 0%, rgba(255, 255, 255, 0.4) 100%);
+      border: 1px solid var(--liquid-glass-border);
+      box-shadow: inset 0 1px 1.5px rgba(255, 255, 255, 0.9), 0 3px 12px rgba(15, 23, 42, 0.03);
+      border-radius: 20px;
       overflow-x: auto;
       white-space: nowrap;
       scrollbar-width: none;
       -webkit-overflow-scrolling: touch;
-      padding: 10px 14px;
+      padding: 5px 6px;
       display: flex;
-      gap: 8px;
+      gap: 6px;
+      scroll-behavior: smooth;
+      position: relative;
     }
     .tabs-bar::-webkit-scrollbar { display: none; }
 
-    .tab-item {
-      background: #F1F3F5;
+    .tab-card {
+      background: transparent;
       border: 1px solid transparent;
-      padding: 8px 16px;
-      border-radius: 24px;
-      font-size: 13px;
-      font-weight: 600;
-      color: var(--text-sub);
+      padding: 6px 14px;
+      border-radius: 15px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
       cursor: pointer;
       flex-shrink: 0;
-      transition: all 0.2s ease;
+      min-width: 68px;
+      transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
     }
-    .tab-item.active {
-      background: var(--primary);
-      color: #FFFFFF;
-      box-shadow: 0 3px 10px rgba(144, 31, 59, 0.35);
+    .tab-day-label {
+      font-size: 12.5px;
+      font-weight: 700;
+      color: #475569;
+      line-height: 1.2;
+    }
+    .tab-date-label {
+      font-size: 10px;
+      font-weight: 500;
+      color: #94A3B8;
+      margin-top: 2px;
+      line-height: 1;
     }
 
-    .content-box { max-width: 550px; margin: 0 auto; padding: 16px; }
+    /* Active Tab */
+    .tab-card.active {
+      background: var(--primary-gradient);
+      box-shadow: 
+        inset 0 1px 1px rgba(255, 255, 255, 0.35),
+        0 4px 14px rgba(144, 31, 59, 0.38);
+      transform: scale(1.02);
+    }
+    .tab-card.active .tab-day-label {
+      color: #FFFFFF;
+    }
+    .tab-card.active .tab-date-label {
+      color: #FCE4EC;
+    }
+
+    /* Content Area */
+    .content-box { 
+      max-width: 520px; 
+      margin: 0 auto; 
+      padding: 10px 14px; 
+    }
 
     .day-banner {
-      background: #FFFFFF;
-      border-left: 4px solid var(--primary);
-      padding: 12px 14px;
-      border-radius: 8px;
-      margin-bottom: 16px;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.03);
-    }
-    .day-banner-title { font-size: 14px; font-weight: 700; color: var(--text-main); line-height: 1.4; }
-
-    .timeline { position: relative; padding-left: 18px; }
-    .timeline::before {
-      content: '';
-      position: absolute;
-      left: 5px;
-      top: 14px;
-      bottom: 14px;
-      width: 2px;
-      background: #E5D5DA;
-    }
-
-    .card {
-      position: relative;
-      background: var(--card-bg);
-      border-radius: 12px;
-      padding: 14px;
       margin-bottom: 14px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.03);
-      border: 1px solid var(--border);
+      padding: 2px 4px;
     }
-    .card::before {
-      content: '';
-      position: absolute;
-      left: -17px;
-      top: 18px;
-      width: 8px;
-      height: 8px;
-      border-radius: 50%;
-      background: var(--primary);
-      border: 2px solid #FFF;
-      box-shadow: 0 0 0 1px #E5D5DA;
+    .day-banner-title { 
+      font-size: 15px; 
+      font-weight: 700; 
+      color: #334155; 
+      line-height: 1.4; 
     }
 
-    .card-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; }
-    .card-time {
-      background: var(--accent-soft);
+    /* iOS Liquid Glass Travel Card */
+    .travel-card {
+      background: var(--liquid-glass-bg);
+      border-radius: 26px;
+      padding: 16px;
+      margin-bottom: 20px;
+      box-shadow: var(--liquid-glass-shadow);
+      border: 1px solid var(--liquid-glass-border);
+      backdrop-filter: blur(24px) saturate(180%);
+      -webkit-backdrop-filter: blur(24px) saturate(180%);
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Soft Liquid Time Badge */
+    .time-badge-wrapper {
+      display: flex;
+      align-items: center;
+      margin-bottom: 12px;
+    }
+    .soft-time-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      background: var(--primary-soft);
+      border: 1px solid var(--primary-border);
+      box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.8);
       color: var(--primary);
-      font-size: 11px;
+      font-size: 12px;
       font-weight: 700;
-      padding: 3px 8px;
-      border-radius: 6px;
-    }
-    .badge {
-      font-size: 10px;
-      font-weight: 700;
-      padding: 2px 7px;
-      border-radius: 6px;
-      text-transform: uppercase;
-      color: white;
+      padding: 5px 12px;
+      border-radius: 12px;
+      letter-spacing: 0.2px;
     }
 
-    .card-name { font-size: 15px; font-weight: 700; color: #1A202C; margin-bottom: 4px; line-height: 1.35; }
-    
-    /* Description & Note styling */
-    .card-desc { font-size: 13px; color: #4A5568; line-height: 1.45; word-break: break-word; }
-    
-    .card-note { 
-      font-size: 13px; 
-      color: #4A5568; 
-      line-height: 1.45; 
-      margin-top: 4px; 
-      word-break: break-word; 
-    }
-    .card-note a {
-      color: var(--link-color);
-      text-decoration: underline;
-      text-underline-offset: 2px;
-      font-weight: 500;
-      word-break: break-word;
-    }
-    .card-note a:active { opacity: 0.7; }
-
-    /* Khung ảnh tỷ lệ 1920x1080 (16:9), tự crop chuẩn */
-    .card-img-wrapper {
-      margin-top: 10px;
-      border-radius: 10px;
-      overflow: hidden;
+    /* 16:9 Image */
+    .card-media {
       width: 100%;
       aspect-ratio: 16 / 9;
-      background: #ECEFF1;
+      border-radius: 18px;
+      overflow: hidden;
+      background: #E2E8F0;
+      margin-bottom: 12px;
+      box-shadow: 0 4px 16px rgba(15, 23, 42, 0.06);
     }
-    .card-img {
+    .card-media img {
       width: 100%;
       height: 100%;
       object-fit: cover;
-      object-position: center;
       display: block;
+    }
+
+    /* Card Details */
+    .card-body {
+      padding: 0 2px;
+    }
+    .card-title {
+      font-size: 16.5px;
+      font-weight: 700;
+      color: var(--text-main);
+      margin-bottom: 6px;
+      line-height: 1.35;
+    }
+    .card-desc {
+      font-size: 13.5px;
+      color: var(--text-sub);
+      line-height: 1.55;
+      margin-bottom: 14px;
+    }
+
+    /* Liquid Pill Action Buttons */
+    .meta-pills {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      align-items: center;
+    }
+    .pill-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      background: linear-gradient(180deg, rgba(255, 255, 255, 0.95) 0%, rgba(245, 248, 252, 0.85) 100%);
+      border: 1px solid rgba(255, 255, 255, 0.95);
+      box-shadow: inset 0 1px 1px #FFFFFF, 0 2px 6px rgba(15, 23, 42, 0.04);
+      color: var(--primary);
+      font-size: 12px;
+      font-weight: 600;
+      padding: 6px 14px;
+      border-radius: 14px;
+      text-decoration: none;
+      transition: all 0.15s ease;
+    }
+    .pill-link:active {
+      background: var(--primary-soft);
+      border-color: var(--primary-border);
+      transform: scale(0.97);
+    }
+    .pill-note-only {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      background: rgba(255, 255, 255, 0.7);
+      border: 1px solid rgba(255, 255, 255, 0.85);
+      color: #475569;
+      font-size: 12px;
+      font-weight: 600;
+      padding: 6px 14px;
+      border-radius: 14px;
+    }
+
+    .loading-msg {
+      text-align: center;
+      padding: 60px 20px;
+      color: var(--text-sub);
+      font-size: 14px;
     }
   </style>
 </head>
 <body>
 
+  <!-- Floating Island Header -->
   <header>
-    <div class="header-info">
-      <div class="header-title">JAPAN WINTER TOUR 2026</div>
-      <div class="sync-badge" id="syncStatus">Đã lưu trong máy ✓</div>
+    <div class="header-island">
+      <div class="header-info">
+        <div class="header-subtext">Winter Itinerary</div>
+        <div class="header-title">JAPAN TOUR 2026</div>
+      </div>
+      <div class="header-actions">
+        <div class="sync-pill" id="syncStatus">
+          <span class="status-dot"></span>
+          <span id="syncStatusText">Loading...</span>
+        </div>
+        <button class="refresh-btn" onclick="syncOnline(true)">Sync ⟳</button>
+      </div>
     </div>
-    <button class="refresh-btn" onclick="syncOnline(true)">Cập nhật ⟳</button>
   </header>
 
-  <div class="tabs-bar" id="tabsList"></div>
+  <!-- Segmented Tabs -->
+  <div class="tabs-bar-wrapper">
+    <div class="tabs-bar" id="tabsList"></div>
+  </div>
 
+  <!-- Content Container -->
   <div class="content-box">
     <div class="day-banner" id="dayBanner">
       <div class="day-banner-title" id="dayFullTitle"></div>
     </div>
-    <div class="timeline" id="timelineCards"></div>
+    <div id="travelCardList"></div>
   </div>
 
   <script>
     const LOCAL_FILE = "./japantour.xlsx";
     const SHAREPOINT_FILE = "https://bscvn-my.sharepoint.com/:x:/g/personal/minhpq_bsc_com_vn/IQCHNDjCKlC5S4w9i-w0x3OiAVVX9bXIhQsYTux5-12K7tg?e=Pbu1oa&download=1";
     const CACHE_KEY = "japan_trip_last_saved_note_v1";
-
-    const BACKUP_DATA = [
-      {
-        "tab": "Day 1 (27/11)",
-        "title": "Day 1: 27/11/2026 — Hanoi • Tokyo • Odaiba Sunset",
-        "items": [
-          { "time": "00:55 - 08:00", "activity": "On Flight", "desc": "Depart HAN on flight VJ 932 to NRT", "note": "", "img": "", "link": "" },
-          { "time": "08:00 - 11:00", "activity": "Arrival & Immigration", "desc": "Complete immigration and Send Luggage at Narita Airport.", "note": "", "img": "", "link": "" },
-          { "time": "11:00 - 12:00", "activity": "Airport Transfer", "desc": "Transfer from Narita Airport to Tokyo (Ota-ku / Heiwajima) via Keisei Skyliner / Train.", "note": "", "img": "", "link": "" },
-          { "time": "12:00 - 13:00", "activity": "Lunch", "desc": "Enjoy authentic Japanese curry at CoCo Ichibanya.", "note": "", "img": "" },
-          { "time": "13:00 - 14:00", "activity": "Check-in & Refresh", "desc": "Airbnb Check in", "note": "", "img": "", "link": "" },
-          { "time": "14:00 - 16:30", "activity": "Miraikan Museum", "desc": "Visit Miraikan (National Museum of Emerging Science and Innovation)", "note": "", "img": "", "link": "" },
-          { "time": "16:30 - 17:30", "activity": "Odaiba Sunset", "desc": "Sunset stroll at Odaiba Seaside Park; admire Rainbow Bridge and Tokyo Bay skyline.", "note": "", "img": "", "link": "" },
-          { "time": "18:00 - 20:00", "activity": "Dinner", "desc": "Traditional Tokyo Monjayaki specialty dinner", "note": "", "img": "", "link": "" },
-          { "time": "20:00 - 21:00", "activity": "Evening Leisure", "desc": "Night at Tokyo Tower and return hotel to rest", "note": "", "img": "", "link": "" }
-        ]
-      },
-      {
-        "tab": "Day 2 (28/11)",
-        "title": "Day 2: 28/11/2026 — Tokyo DisneySea",
-        "items": [
-          { "time": "08:00 - 09:00", "activity": "Transfer to Disney", "desc": "Transfer from hotel to Tokyo DisneySea (Maihama, Chiba).", "note": "", "img": "", "link": "" },
-          { "time": "09:00 - 16:00", "activity": "Tokyo DisneySea", "desc": "Full day exploring themed ports: Mediterranean Harbor, Mysterious Island, Arabian Coast & thrilling attractions.", "note": "", "img": "", "link": "" },
-          { "time": "17:00 - 21:00", "activity": "Dinner", "desc": "Fresh kaiten-sushi dinner at Sushiro (Omorikita branch).", "note": "", "img": "", "link": "" },
-          { "time": "21:00", "activity": "Return to Hotel", "desc": "Evening leisure & rest at hotel.", "note": "", "img": "", "link": "" }
-        ]
-      },
-      {
-        "tab": "Day 3 (29/11)",
-        "title": "Day 3: 29/11/2026 — Mount Fuji • Oshino Hakkai • Lake Kawaguchiko",
-        "items": [
-          { "time": "06:00 - 08:00", "activity": "Depart for Mt. Fuji", "desc": "Check out hotel; transfer from Tokyo toward Fuji Five Lakes region.", "note": "", "img": "", "link": "" },
-          { "time": "08:00 - 12:00", "activity": "Fuji Heritage Tour", "desc": "Sightseeing at Honcho Street, Lake Yamanaka Boardwalk, and ancient spring village Oshino Hakkai.", "note": "", "img": "", "link": "" },
-          { "time": "12:00 - 13:30", "activity": "Lunch", "desc": "Authentic Koshu Hoto Kosaku noodles (pumpkin miso noodle stew).", "note": "", "img": "", "link": "" },
-          { "time": "13:30 - 16:00", "activity": "Kawaguchiko Sights", "desc": "Scenic walk at Oishi Park overlooking Mt. Fuji & photo stop at Mt. Fuji Lawson.", "note": "", "img": "", "link": "" },
-          { "time": "16:30 - 18:00", "activity": "Hotel Check-in", "desc": "Check in Fuji Kawaguchiko Resort Hotel; relax with Mount Fuji view.", "note": "", "img": "", "link": "" },
-          { "time": "18:00 - 20:00", "activity": "Dinner", "desc": "Charcoal-grilled BBQ/ Yakitori dinner at Sanrokuen.", "note": "", "img": "", "link": "" }
-        ]
-      },
-      {
-        "tab": "Day 4 (30/11)",
-        "title": "Day 4: 30/11/2026 — Kawaguchiko • Matsumoto City",
-        "items": [
-          { "time": "08:00 - 11:30", "activity": "Lakeside Cycling", "desc": "Morning bike tour around Lake Kawaguchiko; lakeside coffee break (The Park Cafe / Lake Bake).", "note": "", "img": "", "link": "" },
-          { "time": "11:30 - 13:00", "activity": "Lunch", "desc": "Crispy Tonkatsu / Tempura at Fuji Tempura Idaten (or Koushuya).", "note": "", "img": "", "link": "" },
-          { "time": "13:30 - 16:30", "activity": "Transfer to Matsumoto", "desc": "Scenic transfer by express bus / JR train from Kawaguchiko Station to Matsumoto (Nagano).", "note": "", "img": "", "link": "" },
-          { "time": "16:30 - 18:00", "activity": "Hotel Check-in", "desc": "Check in Toyoko Inn Matsumoto Station Ekimae.", "note": "", "img": "", "link": "" },
-          { "time": "18:00 - 20:30", "activity": "Dinner & City Walk", "desc": "Savor Japanese Hamburger Steak (Amiya Yakiniku) & explore Matsumoto downtown.", "note": "", "img": "", "link": "" }
-        ]
-      },
-      {
-        "tab": "Day 5 (01/12)",
-        "title": "Day 5: 01/12/2026 — Kamikochi Alpine Valley",
-        "items": [
-          { "time": "07:40 - 09:00", "activity": "Bus to Kamikochi", "desc": "Depart Matsumoto Bus Terminal via scenic alpine bus to Kamikochi (Chubu Sangaku National Park).", "note": "", "img": "", "link": "" },
-          { "time": "09:00 - 14:00", "activity": "Kamikochi Trekking", "desc": "Nature hike along Azusa River from Taisho Pond to Kappa Bridge; admire snow-capped Alps. Lunch in valley.", "note": "", "img": "", "link": "" },
-          { "time": "14:30 - 16:00", "activity": "Return to Matsumoto", "desc": "Alpine bus transfer from Kamikochi back to Matsumoto Station.", "note": "", "img": "", "link": "" },
-          { "time": "18:00 - 20:30", "activity": "Dinner", "desc": "Shinshu Premium Beef yakiniku & Nagano regional specialties (Horumon Ya Kaishu).", "note": "", "img": "", "link": "" }
-        ]
-      },
-      {
-        "tab": "Day 6 (02/12)",
-        "title": "Day 6: 02/12/2026 — Matsumoto Castle • Kyoto",
-        "items": [
-          { "time": "08:30 - 11:30", "activity": "Matsumoto Castle", "desc": "Tour Matsumoto Castle (National Treasure) & stroll along historic Nawate Frog Street.", "note": "", "img": "" },
-          { "time": "11:30 - 13:00", "activity": "Lunch", "desc": "Handmade Shinshu Soba noodles at Kobayashi Soba.", "note": "", "img": "", "link": "" },
-          { "time": "13:30 - 16:30", "activity": "Train to Kyoto", "desc": "JR Limited Express Shinano / Shinkansen through scenic Kiso Valley to Kyoto Station.", "note": "", "img": "" }
-        ]
-      },
-      {
-        "tab": "Day 7 (03/12)",
-        "title": "Day 7: 03/12/2026 — Arashiyama Bamboo Grove • Sagano Train",
-        "items": [
-          { "time": "08:00 - 12:00", "activity": "Arashiyama Sights", "desc": "Morning stroll in Bamboo Grove, Hozu River scenic boat tour & visit moss temple Otagi Nenbutsu-ji.", "note": "", "img": "", "link": "" },
-          { "time": "12:00 - 13:30", "activity": "Lunch", "desc": "Kyoto style Udon noodles & sweets at Ogura Cha-Ya.", "note": "", "img": "", "link": "" },
-          { "time": "13:30 - 16:30", "activity": "Sagano Romantic Train", "desc": "Vintage scenic train ride along Sagano romantic river gorge.", "note": "", "img": "", "link": "" },
-          { "time": "17:00 - 19:30", "activity": "Shopping & Dinner", "desc": "Shijo-Kawaramachi shopping & gourmet Pizza date night (400℃ Pizza Kyoto).", "note": "", "img": "", "link": "" }
-        ]
-      },
-      {
-        "tab": "Day 8 (04/12)",
-        "title": "Day 8: 04/12/2026 — Kimono Experience • Gion & Kiyomizu • Nara",
-        "items": [
-          { "time": "08:30 - 11:30", "activity": "Kimono & Ancient Kyoto", "desc": "Wear traditional Kimono; explore Ninenzaka, Sannenzaka, Gion & panoramic terrace of Kiyomizu-dera.", "note": "", "img": "", "link": "" },
-          { "time": "11:30 - 13:00", "activity": "Lunch", "desc": "Charcoal-grilled Unagi Donburi (Eel Rice Bowl) at Gion Unagi Kawato.", "note": "", "img": "", "link": "" },
-          { "time": "13:00 - 17:30", "activity": "Matcha lover with deers", "desc": "Visit Uji or Nara or Ine Village", "note": "", "img": "", "link": "" },
-          { "time": "18:00 - 20:30", "activity": "Dinner & Souvenirs", "desc": "Kyoto farewell dinner & traditional Matcha souvenir shopping.", "note": "", "img": "", "link": "" }
-        ]
-      },
-      {
-        "tab": "Day 9 (05/12)",
-        "title": "Day 9: 05/12/2026 — Kyoto • Kansai Airport • Hanoi",
-        "items": [
-          { "time": "09:00 - 11:00", "activity": "Morning Walk & Packing", "desc": "Hotel check-out, luggage storage & final souvenir walk around Kyoto Station.", "note": "", "img": "", "link": "" },
-          { "time": "11:00 - 12:30", "activity": "Lunch", "desc": "Teishoku set lunch / Gyudon at Kyoto Porta Mall.", "note": "", "img": "", "link": "" },
-          { "time": "12:30 - 14:00", "activity": "Kansai Airport Express", "desc": "Board JR Haruka Airport Express from Kyoto Station to Kansai International Airport (KIX).", "note": "", "img": "", "link": "" },
-          { "time": "14:00 - 17:00", "activity": "Departure Flight", "desc": "Duty-free shopping, flight check-in and board flight returning to Hanoi.", "note": "", "img": "", "link": "" }
-        ]
-      }
-    ];
+    const TIME_KEY = "japan_trip_last_sync_time_v1";
 
     let tripData = [];
     let activeIndex = 0;
 
+    function formatCurrentTime() {
+      const now = new Date();
+      const h = String(now.getHours()).padStart(2, '0');
+      const m = String(now.getMinutes()).padStart(2, '0');
+      return `${h}:${m}`;
+    }
+
+    function setStatus(text, isReady = true) {
+      const el = document.getElementById("syncStatusText");
+      const dot = document.querySelector(".status-dot");
+      if (el) el.innerText = text;
+      if (dot) dot.style.background = isReady ? "#901F3B" : "#F59E0B";
+    }
+
     function init() {
       const cached = localStorage.getItem(CACHE_KEY);
+      const lastTime = localStorage.getItem(TIME_KEY);
       if (cached) {
-        try { tripData = JSON.parse(cached); } catch(e) { tripData = BACKUP_DATA; }
-      } else {
-        tripData = BACKUP_DATA;
+        try { 
+          tripData = JSON.parse(cached); 
+          setStatus(lastTime ? `Updated ${lastTime}` : "Updated", true);
+        } catch(e) { 
+          tripData = []; 
+        }
       }
       renderUI();
       syncOnline(false);
     }
 
     async function syncOnline(isManual) {
-      const badge = document.getElementById("syncStatus");
-      if (isManual) badge.innerText = "Đang kiểm tra...";
+      if (isManual) setStatus("Syncing...", false);
 
       let arrayBuffer = null;
       try {
@@ -391,14 +464,22 @@
           const parsed = parseSheet(rows);
           if (parsed && parsed.length > 0) {
             tripData = parsed;
+            const updatedTime = formatCurrentTime();
             localStorage.setItem(CACHE_KEY, JSON.stringify(parsed));
+            localStorage.setItem(TIME_KEY, updatedTime);
             renderUI();
-            badge.innerText = "Đã lưu bản mới nhất ✓";
+            setStatus(`Updated ${updatedTime}`, true);
             return;
           }
         } catch(err) {}
       }
-      badge.innerText = "Chế độ xem Offline ✓";
+
+      const lastTime = localStorage.getItem(TIME_KEY);
+      if (tripData.length > 0) {
+        setStatus(lastTime ? `Updated ${lastTime}` : "Offline Mode", true);
+      } else {
+        setStatus("Sync Failed", false);
+      }
     }
 
     function formatTime(val) {
@@ -413,9 +494,27 @@
       return (s.includes(":") && s.length === 8) ? s.substring(0, 5) : s;
     }
 
+    function extractDayAndDate(headerText, dayIndex) {
+      let dayName = `Day ${dayIndex + 1}`;
+      let dayDate = "";
+
+      let dayMatch = headerText.match(/Day\s*(\d+)/i) || headerText.match(/Ngày\s*(\d+)/i);
+      if (dayMatch) {
+        dayName = `Day ${dayMatch[1]}`;
+      }
+
+      let dateMatch = headerText.match(/(\d{1,2}\/\d{1,2})/);
+      if (dateMatch) {
+        dayDate = dateMatch[1];
+      }
+
+      return { dayName, dayDate };
+    }
+
     function parseSheet(rows) {
       let parsed = [];
       let cur = null;
+      let dayCount = 0;
 
       rows.forEach(r => {
         const c0 = String(r[0] || "").trim(); // Time
@@ -430,17 +529,21 @@
 
         if ((c0.toLowerCase().startsWith("day ") || c0.toLowerCase().startsWith("ngày ")) && (!c1 || c1 === "undefined")) {
           if (cur) parsed.push(cur);
-          let tab = c0.split("—")[0].split(":")[0].trim();
-          let m = c0.match(/\d{1,2}\/\d{1,2}/);
-          if (m) tab += ` (${m[0]})`;
-          cur = { tab: tab, title: c0, items: [] };
+          const meta = extractDayAndDate(c0, dayCount);
+          cur = { 
+            tabDay: meta.dayName,
+            tabDate: meta.dayDate,
+            title: c0, 
+            items: [] 
+          };
+          dayCount++;
           return;
         }
 
         if (cur && (c0 || c1)) {
           cur.items.push({
             time: formatTime(c0),
-            activity: c1 || "Hoạt động",
+            activity: c1 || "Activity",
             desc: c2,
             note: c3,
             img: c4,
@@ -453,72 +556,118 @@
       return parsed;
     }
 
-    function getTagColor(act) {
-      let a = (act || "").toLowerCase();
-      if (a.includes("flight") || a.includes("transfer") || a.includes("train") || a.includes("bus")) return "var(--tag-flight)";
-      if (a.includes("lunch") || a.includes("dinner")) return "var(--tag-food)";
-      if (a.includes("hotel") || a.includes("check-in") || a.includes("refresh")) return "var(--tag-hotel)";
-      return "var(--tag-sight)";
+    // Auto-Scroll Logic
+    function scrollToActiveTab(idx) {
+      const tabsBar = document.getElementById("tabsList");
+      if (!tabsBar || !tabsBar.children || tabsBar.children.length <= idx) return;
+      const targetElement = tabsBar.children[idx];
+      if (!targetElement) return;
+
+      if (idx <= 3) {
+        // Day 1 to Day 4: Lock scroll to the start so Day 1 - 4 are 100% visible
+        tabsBar.scrollTo({ left: 0, behavior: 'smooth' });
+      } else if (idx >= tripData.length - 3) {
+        // Day 7 to Day 9: Slide all the way right so Day 9 is fully in view
+        tabsBar.scrollTo({ left: tabsBar.scrollWidth, behavior: 'smooth' });
+      } else {
+        // Day 5 & Day 6: Shift so active tab is at the beginning, revealing Day 6 - 9 immediately
+        const offset = targetElement.offsetLeft - tabsBar.offsetLeft - 8;
+        tabsBar.scrollTo({ left: Math.max(0, offset), behavior: 'smooth' });
+      }
     }
 
     function renderUI() {
       const tabsBar = document.getElementById("tabsList");
+      const cardContainer = document.getElementById("travelCardList");
+      const bannerTitle = document.getElementById("dayFullTitle");
+      const banner = document.getElementById("dayBanner");
+
       tabsBar.innerHTML = "";
 
+      if (!tripData || tripData.length === 0) {
+        banner.style.display = "none";
+        cardContainer.innerHTML = `<div class="loading-msg">Preparing itinerary...</div>`;
+        return;
+      }
+
+      banner.style.display = "block";
+
       tripData.forEach((day, idx) => {
-        const btn = document.createElement("button");
-        btn.className = `tab-item ${idx === activeIndex ? "active" : ""}`;
-        btn.innerText = day.tab;
-        btn.onclick = () => {
+        const tabBtn = document.createElement("div");
+        const isActive = (idx === activeIndex);
+        tabBtn.className = `tab-card ${isActive ? "active" : ""}`;
+        
+        const dateHtml = day.tabDate ? `<span class="tab-date-label">${day.tabDate}</span>` : "";
+        tabBtn.innerHTML = `
+          <span class="tab-day-label">${day.tabDay}</span>
+          ${dateHtml}
+        `;
+        
+        tabBtn.onclick = () => {
           activeIndex = idx;
           renderUI();
-          btn.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
         };
-        tabsBar.appendChild(btn);
+        tabsBar.appendChild(tabBtn);
+      });
+
+      // Trigger bidirectional scroll right after DOM paint
+      requestAnimationFrame(() => {
+        setTimeout(() => {
+          scrollToActiveTab(activeIndex);
+        }, 30);
       });
 
       const activeDay = tripData[activeIndex];
       if (activeDay) {
-        document.getElementById("dayFullTitle").innerText = activeDay.title;
-        const cardContainer = document.getElementById("timelineCards");
+        bannerTitle.innerText = activeDay.title;
         cardContainer.innerHTML = "";
 
         activeDay.items.forEach(item => {
           const card = document.createElement("div");
-          card.className = "card";
-          const tagColor = getTagColor(item.activity);
-          const timeHtml = item.time ? `<span class="card-time">${item.time}</span>` : `<span class="card-time">Trong ngày</span>`;
-          const badgeHtml = `<span class="badge" style="background:${tagColor}">${item.activity}</span>`;
+          card.className = "travel-card";
+
+          const displayTime = item.time ? `⏰ ${item.time}` : `⏰ All Day`;
+
+          const timeBadgeHtml = `
+            <div class="time-badge-wrapper">
+              <span class="soft-time-badge">${displayTime}</span>
+            </div>
+          `;
+
+          let mediaHtml = "";
+          if (item.img) {
+            mediaHtml = `
+              <div class="card-media">
+                <img src="${item.img}" loading="lazy" alt="${item.activity}" />
+              </div>
+            `;
+          }
 
           const descHtml = item.desc ? `<div class="card-desc">${item.desc}</div>` : "";
 
-          let noteHtml = "";
+          let linkPill = "";
           if (item.note) {
             if (item.link) {
               let validLink = item.link.trim();
               if (!validLink.startsWith("http://") && !validLink.startsWith("https://")) {
                 validLink = "https://" + validLink;
               }
-              noteHtml = `<div class="card-note"><a href="${validLink}" target="_blank" rel="noopener noreferrer">${item.note} ↗</a></div>`;
+              linkPill = `<a href="${validLink}" target="_blank" rel="noopener noreferrer" class="pill-link">📍 ${item.note} ↗</a>`;
             } else {
-              noteHtml = `<div class="card-note">${item.note}</div>`;
+              linkPill = `<span class="pill-note-only">📍 ${item.note}</span>`;
             }
           }
 
-          let imgHtml = "";
-          if (item.img) {
-            imgHtml = `<div class="card-img-wrapper"><img src="${item.img}" class="card-img" /></div>`;
-          }
+          const pillsContainerHtml = linkPill ? `<div class="meta-pills">${linkPill}</div>` : "";
 
           card.innerHTML = `
-            <div class="card-head">
-              ${timeHtml}
-              ${badgeHtml}
+            ${timeBadgeHtml}
+            ${mediaHtml}
+            <div class="card-body">
+              <div class="card-title">${item.activity}</div>
+              ${descHtml}
+              ${pillsContainerHtml}
             </div>
-            <div class="card-name">${item.activity}</div>
-            ${descHtml}
-            ${noteHtml}
-            ${imgHtml}
           `;
           cardContainer.appendChild(card);
         });
