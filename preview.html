@@ -1,234 +1,352 @@
 <!DOCTYPE html>
-<html lang="vi">
+<html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
   <title>Japan Winter Tour 2026</title>
   
   <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
   <meta name="apple-mobile-web-app-title" content="Japan Winter 2026">
 
-  <!-- Biểu tượng icon ứng dụng dạng PNG chuẩn cho iPhone -->
   <link rel="apple-touch-icon" sizes="180x180" href="./sakura.png">
   <link rel="icon" type="image/png" href="./sakura.png">
 
-  <!-- Thư viện SheetJS đọc file Excel -->
+  <!-- SheetJS -->
   <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 
   <style>
-    /* Nhúng font Aptos */
     @font-face {
       font-family: 'Aptos';
       src: local('Aptos'),
+           local('Aptos Display'),
            url('https://cdn.jsdelivr.net/gh/idursun/aptos-font@main/Aptos.ttf') format('truetype');
       font-weight: 400;
       font-style: normal;
+      font-display: swap;
     }
     @font-face {
       font-family: 'Aptos';
       src: local('Aptos-Bold'),
+           local('Aptos Display Bold'),
            url('https://cdn.jsdelivr.net/gh/idursun/aptos-font@main/Aptos-Bold.ttf') format('truetype');
       font-weight: 700;
       font-style: normal;
+      font-display: swap;
+    }
+    @font-face {
+      font-family: 'Aptos';
+      src: local('Aptos-SemiBold'),
+           url('https://cdn.jsdelivr.net/gh/idursun/aptos-font@main/Aptos-SemiBold.ttf') format('truetype');
+      font-weight: 600;
+      font-style: normal;
+      font-display: swap;
     }
 
     :root {
-      --primary: #901f3b;               /* Đỏ rượu chủ đạo */
-      --primary-gradient: linear-gradient(135deg, #901f3b 0%, #b83252 100%);
-      --accent: #901f3b;
-      --accent-soft: #F9EBEF;
-      --bg: #F8F9FA;
+      --primary: #901f3b;
+      --primary-soft: #FDF2F4;
+      --primary-border: #F9D5DB;
+
+      --bg: #F4F6F9;
       --card-bg: #FFFFFF;
-      --text-main: #2B2D42;
-      --text-sub: #6C757D;
-      --border: #EDE0E4;
-      --tag-flight: #3D5A80;
-      --tag-food: #D00000;
-      --tag-hotel: #5C3D75;
-      --tag-sight: #901f3b;
-      --link-color: #1976D2;
+      --border-subtle: #E2E8F0;
+      --card-shadow: 0 4px 18px rgba(15, 23, 42, 0.05), 0 1px 3px rgba(0, 0, 0, 0.02);
+      
+      --text-main: #0F172A;
+      --text-sub: #64748B;
     }
 
     * { 
       box-sizing: border-box; 
       margin: 0; 
       padding: 0; 
-      font-family: 'Aptos', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; 
+      font-family: 'Aptos', -apple-system, BlinkMacSystemFont, "SF Pro Display", -apple-system, sans-serif; 
     }
-    body { background-color: var(--bg); color: var(--text-main); padding-bottom: 50px; -webkit-tap-highlight-color: transparent; }
+    
+    body { 
+      background-color: var(--bg);
+      color: var(--text-main); 
+      padding-bottom: 70px; 
+      -webkit-tap-highlight-color: transparent; 
+      min-height: 100vh;
+    }
 
+    /* Floating Header Island */
     header {
-      background: var(--primary-gradient);
-      color: white;
-      padding: calc(env(safe-area-inset-top, 20px) + 12px) 16px 12px;
       position: sticky;
       top: 0;
       z-index: 100;
-      box-shadow: 0 4px 15px rgba(144, 31, 59, 0.2);
+      padding: calc(env(safe-area-inset-top, 20px) + 8px) 14px 10px;
+      background: rgba(244, 246, 249, 0.88);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+    }
+    .header-island {
+      background: #FFFFFF;
+      border: 1px solid var(--border-subtle);
+      box-shadow: 0 4px 16px rgba(15, 23, 42, 0.04);
+      border-radius: 20px;
+      padding: 11px 16px;
       display: flex;
       justify-content: space-between;
       align-items: center;
     }
     .header-info { text-align: left; }
-    .header-title { font-size: 17px; font-weight: 700; letter-spacing: 0.3px; }
-    .sync-badge {
-      font-size: 11px;
-      display: inline-block;
-      margin-top: 3px;
-      padding: 2px 8px;
-      border-radius: 10px;
-      background: rgba(255,255,255,0.22);
+    .header-subtext {
+      font-size: 10.5px;
+      font-weight: 600;
+      color: var(--text-sub);
+      text-transform: uppercase;
+      letter-spacing: 0.6px;
     }
+    .header-title { 
+      font-size: 16px; 
+      font-weight: 700; 
+      color: var(--primary);
+      letter-spacing: 0.3px; 
+      line-height: 1.25;
+      margin-top: 1px;
+    }
+
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .sync-pill {
+      font-size: 11px;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 5px 11px;
+      border-radius: 20px;
+      background: var(--primary-soft);
+      color: var(--primary);
+      font-weight: 600;
+      border: 1px solid var(--primary-border);
+      white-space: nowrap;
+    }
+    .status-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--primary);
+      flex-shrink: 0;
+    }
+
     .refresh-btn {
-      background: rgba(255,255,255,0.25);
-      border: 1px solid rgba(255,255,255,0.4);
-      color: white;
-      padding: 6px 12px;
+      background: #FFFFFF;
+      border: 1px solid var(--border-subtle);
+      color: var(--primary);
+      padding: 6px 13px;
       border-radius: 16px;
       font-size: 12px;
       font-weight: 600;
       cursor: pointer;
+      box-shadow: 0 1px 4px rgba(0, 0, 0, 0.04);
+      transition: all 0.2s ease;
+      white-space: nowrap;
+    }
+    .refresh-btn:active {
+      transform: scale(0.95);
+      background: var(--primary-soft);
     }
 
+    /* Segmented Track Tabs */
+    .tabs-bar-wrapper {
+      position: sticky;
+      top: calc(env(safe-area-inset-top, 20px) + 68px);
+      z-index: 99;
+      padding: 6px 14px 10px;
+      background: rgba(244, 246, 249, 0.88);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+    }
     .tabs-bar {
       background: #FFFFFF;
-      border-bottom: 1px solid var(--border);
-      position: sticky;
-      top: calc(env(safe-area-inset-top, 20px) + 57px);
-      z-index: 99;
+      border: 1px solid var(--border-subtle);
+      box-shadow: 0 2px 10px rgba(15, 23, 42, 0.04);
+      border-radius: 20px;
       overflow-x: auto;
       white-space: nowrap;
       scrollbar-width: none;
       -webkit-overflow-scrolling: touch;
-      padding: 10px 14px;
+      padding: 6px 8px;
       display: flex;
       gap: 8px;
+      scroll-behavior: smooth;
     }
     .tabs-bar::-webkit-scrollbar { display: none; }
 
-    .tab-item {
-      background: #F1F3F5;
+    .tab-card {
+      background: transparent;
       border: 1px solid transparent;
-      padding: 8px 16px;
-      border-radius: 24px;
-      font-size: 13px;
-      font-weight: 600;
-      color: var(--text-sub);
+      padding: 6px 15px;
+      border-radius: 14px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
       cursor: pointer;
       flex-shrink: 0;
-      transition: all 0.2s ease;
+      min-width: 68px;
+      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
     }
-    .tab-item.active {
-      background: var(--primary);
-      color: #FFFFFF;
-      box-shadow: 0 3px 10px rgba(144, 31, 59, 0.35);
+    .tab-day-label {
+      font-size: 12.5px;
+      font-weight: 700;
+      color: #475569;
+      line-height: 1.2;
+    }
+    .tab-date-label {
+      font-size: 10.5px;
+      font-weight: 500;
+      color: #94A3B8;
+      margin-top: 2px;
+      line-height: 1;
     }
 
-    .content-box { max-width: 550px; margin: 0 auto; padding: 16px; }
+    /* Active Tab */
+    .tab-card.active {
+      background: var(--primary);
+      box-shadow: 0 3px 10px rgba(144, 31, 59, 0.3);
+      transform: scale(1.02);
+    }
+    .tab-card.active .tab-day-label {
+      color: #FFFFFF;
+    }
+    .tab-card.active .tab-date-label {
+      color: #FCE4EC;
+    }
+
+    /* Content Area */
+    .content-box { 
+      max-width: 520px; 
+      margin: 0 auto; 
+      padding: 10px 14px; 
+    }
 
     .day-banner {
-      background: #FFFFFF;
-      border-left: 4px solid var(--primary);
-      padding: 12px 14px;
-      border-radius: 8px;
-      margin-bottom: 16px;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.03);
-    }
-    .day-banner-title { font-size: 14px; font-weight: 700; color: var(--text-main); line-height: 1.4; }
-
-    .timeline { position: relative; padding-left: 18px; }
-    .timeline::before {
-      content: '';
-      position: absolute;
-      left: 5px;
-      top: 14px;
-      bottom: 14px;
-      width: 2px;
-      background: #E5D5DA;
-    }
-
-    .card {
-      position: relative;
-      background: var(--card-bg);
-      border-radius: 12px;
-      padding: 14px;
       margin-bottom: 14px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.03);
-      border: 1px solid var(--border);
+      padding: 2px 4px;
     }
-    .card::before {
-      content: '';
-      position: absolute;
-      left: -17px;
-      top: 18px;
-      width: 8px;
-      height: 8px;
-      border-radius: 50%;
-      background: var(--primary);
-      border: 2px solid #FFF;
-      box-shadow: 0 0 0 1px #E5D5DA;
+    .day-banner-title { 
+      font-size: 15px; 
+      font-weight: 700; 
+      color: #334155; 
+      line-height: 1.4; 
     }
 
-    .card-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; }
-    .card-time {
-      background: var(--accent-soft);
+    /* Travel Card */
+    .travel-card {
+      background: var(--card-bg);
+      border-radius: 24px;
+      padding: 16px;
+      margin-bottom: 20px;
+      box-shadow: var(--card-shadow);
+      border: 1px solid var(--border-subtle);
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Time Badge */
+    .time-badge-wrapper {
+      display: flex;
+      align-items: center;
+      margin-bottom: 12px;
+    }
+    .soft-time-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      background: var(--primary-soft);
+      border: 1px solid var(--primary-border);
       color: var(--primary);
-      font-size: 11px;
+      font-size: 12px;
       font-weight: 700;
-      padding: 3px 8px;
-      border-radius: 6px;
-    }
-    .badge {
-      font-size: 10px;
-      font-weight: 700;
-      padding: 2px 7px;
-      border-radius: 6px;
-      text-transform: uppercase;
-      color: white;
+      padding: 5px 12px;
+      border-radius: 12px;
+      letter-spacing: 0.2px;
     }
 
-    .card-name { font-size: 15px; font-weight: 700; color: #1A202C; margin-bottom: 4px; line-height: 1.35; }
-    
-    /* Description & Note styling */
-    .card-desc { font-size: 13px; color: #4A5568; line-height: 1.45; word-break: break-word; }
-    
-    .card-note { 
-      font-size: 13px; 
-      color: #4A5568; 
-      line-height: 1.45; 
-      margin-top: 4px; 
-      word-break: break-word; 
-    }
-    .card-note a {
-      color: var(--link-color);
-      text-decoration: underline;
-      text-underline-offset: 2px;
-      font-weight: 500;
-      word-break: break-word;
-    }
-    .card-note a:active { opacity: 0.7; }
-
-    /* Khung ảnh tỷ lệ 1920x1080 (16:9), tự crop chuẩn */
-    .card-img-wrapper {
-      margin-top: 10px;
-      border-radius: 10px;
-      overflow: hidden;
+    /* 16:9 Image */
+    .card-media {
       width: 100%;
       aspect-ratio: 16 / 9;
-      background: #ECEFF1;
+      border-radius: 16px;
+      overflow: hidden;
+      background: #E2E8F0;
+      margin-bottom: 12px;
     }
-    .card-img {
+    .card-media img {
       width: 100%;
       height: 100%;
       object-fit: cover;
-      object-position: center;
       display: block;
+    }
+
+    /* Card Details */
+    .card-body {
+      padding: 0 2px;
+    }
+    .card-title {
+      font-size: 16.5px;
+      font-weight: 700;
+      color: var(--text-main);
+      margin-bottom: 6px;
+      line-height: 1.35;
+    }
+    .card-desc {
+      font-size: 13.5px;
+      color: var(--text-sub);
+      line-height: 1.55;
+      margin-bottom: 14px;
+    }
+
+    /* Action Buttons */
+    .meta-pills {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      align-items: center;
+    }
+    .pill-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      background: #F8FAFC;
+      border: 1px solid var(--border-subtle);
+      color: var(--primary);
+      font-size: 12px;
+      font-weight: 600;
+      padding: 6px 14px;
+      border-radius: 14px;
+      text-decoration: none;
+      transition: all 0.15s ease;
+    }
+    .pill-link:active {
+      background: var(--primary-soft);
+      border-color: var(--primary-border);
+      transform: scale(0.97);
+    }
+    .pill-note-only {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      background: #F8FAFC;
+      border: 1px solid var(--border-subtle);
+      color: #475569;
+      font-size: 12px;
+      font-weight: 600;
+      padding: 6px 14px;
+      border-radius: 14px;
     }
 
     .loading-msg {
       text-align: center;
-      padding: 40px 20px;
+      padding: 60px 20px;
       color: var(--text-sub);
       font-size: 14px;
     }
@@ -236,37 +354,66 @@
 </head>
 <body>
 
+  <!-- Floating Island Header -->
   <header>
-    <div class="header-info">
-      <div class="header-title">JAPAN WINTER TOUR 2026</div>
-      <div class="sync-badge" id="syncStatus">Đang tải lịch trình...</div>
+    <div class="header-island">
+      <div class="header-info">
+        <div class="header-subtext">Winter Itinerary</div>
+        <div class="header-title">JAPAN TOUR 2026</div>
+      </div>
+      <div class="header-actions">
+        <div class="sync-pill" id="syncStatus">
+          <span class="status-dot"></span>
+          <span id="syncStatusText">Loading...</span>
+        </div>
+        <button class="refresh-btn" onclick="syncOnline(true)">Sync ⟳</button>
+      </div>
     </div>
-    <button class="refresh-btn" onclick="syncOnline(true)">Cập nhật ⟳</button>
   </header>
 
-  <div class="tabs-bar" id="tabsList"></div>
+  <!-- Segmented Tabs -->
+  <div class="tabs-bar-wrapper">
+    <div class="tabs-bar" id="tabsList"></div>
+  </div>
 
+  <!-- Content Container -->
   <div class="content-box">
     <div class="day-banner" id="dayBanner">
       <div class="day-banner-title" id="dayFullTitle"></div>
     </div>
-    <div class="timeline" id="timelineCards"></div>
+    <div id="travelCardList"></div>
   </div>
 
   <script>
     const LOCAL_FILE = "./japantour.xlsx";
     const SHAREPOINT_FILE = "https://bscvn-my.sharepoint.com/:x:/g/personal/minhpq_bsc_com_vn/IQCHNDjCKlC5S4w9i-w0x3OiAVVX9bXIhQsYTux5-12K7tg?e=Pbu1oa&download=1";
     const CACHE_KEY = "japan_trip_last_saved_note_v1";
+    const TIME_KEY = "japan_trip_last_sync_time_v1";
 
     let tripData = [];
     let activeIndex = 0;
 
+    function formatCurrentTime() {
+      const now = new Date();
+      const h = String(now.getHours()).padStart(2, '0');
+      const m = String(now.getMinutes()).padStart(2, '0');
+      return `${h}:${m}`;
+    }
+
+    function setStatus(text, isReady = true) {
+      const el = document.getElementById("syncStatusText");
+      const dot = document.querySelector(".status-dot");
+      if (el) el.innerText = text;
+      if (dot) dot.style.background = isReady ? "#901F3B" : "#F59E0B";
+    }
+
     function init() {
       const cached = localStorage.getItem(CACHE_KEY);
+      const lastTime = localStorage.getItem(TIME_KEY);
       if (cached) {
         try { 
           tripData = JSON.parse(cached); 
-          document.getElementById("syncStatus").innerText = "Đã lưu trong máy ✓";
+          setStatus(lastTime ? `Updated ${lastTime}` : "Updated", true);
         } catch(e) { 
           tripData = []; 
         }
@@ -276,8 +423,7 @@
     }
 
     async function syncOnline(isManual) {
-      const badge = document.getElementById("syncStatus");
-      if (isManual) badge.innerText = "Đang kiểm tra...";
+      if (isManual) setStatus("Syncing...", false);
 
       let arrayBuffer = null;
       try {
@@ -301,18 +447,21 @@
           const parsed = parseSheet(rows);
           if (parsed && parsed.length > 0) {
             tripData = parsed;
+            const updatedTime = formatCurrentTime();
             localStorage.setItem(CACHE_KEY, JSON.stringify(parsed));
+            localStorage.setItem(TIME_KEY, updatedTime);
             renderUI();
-            badge.innerText = "Đã lưu bản mới nhất ✓";
+            setStatus(`Updated ${updatedTime}`, true);
             return;
           }
         } catch(err) {}
       }
 
+      const lastTime = localStorage.getItem(TIME_KEY);
       if (tripData.length > 0) {
-        badge.innerText = "Chế độ xem Offline ✓";
+        setStatus(lastTime ? `Updated ${lastTime}` : "Offline Mode", true);
       } else {
-        badge.innerText = "Không tải được file Excel";
+        setStatus("Sync Failed", false);
       }
     }
 
@@ -328,9 +477,27 @@
       return (s.includes(":") && s.length === 8) ? s.substring(0, 5) : s;
     }
 
+    function extractDayAndDate(headerText, dayIndex) {
+      let dayName = `Day ${dayIndex + 1}`;
+      let dayDate = "";
+
+      let dayMatch = headerText.match(/Day\s*(\d+)/i) || headerText.match(/Ngày\s*(\d+)/i);
+      if (dayMatch) {
+        dayName = `Day ${dayMatch[1]}`;
+      }
+
+      let dateMatch = headerText.match(/(\d{1,2}\/\d{1,2})/);
+      if (dateMatch) {
+        dayDate = dateMatch[1];
+      }
+
+      return { dayName, dayDate };
+    }
+
     function parseSheet(rows) {
       let parsed = [];
       let cur = null;
+      let dayCount = 0;
 
       rows.forEach(r => {
         const c0 = String(r[0] || "").trim(); // Time
@@ -345,17 +512,21 @@
 
         if ((c0.toLowerCase().startsWith("day ") || c0.toLowerCase().startsWith("ngày ")) && (!c1 || c1 === "undefined")) {
           if (cur) parsed.push(cur);
-          let tab = c0.split("—")[0].split(":")[0].trim();
-          let m = c0.match(/\d{1,2}\/\d{1,2}/);
-          if (m) tab += ` (${m[0]})`;
-          cur = { tab: tab, title: c0, items: [] };
+          const meta = extractDayAndDate(c0, dayCount);
+          cur = { 
+            tabDay: meta.dayName,
+            tabDate: meta.dayDate,
+            title: c0, 
+            items: [] 
+          };
+          dayCount++;
           return;
         }
 
         if (cur && (c0 || c1)) {
           cur.items.push({
             time: formatTime(c0),
-            activity: c1 || "Hoạt động",
+            activity: c1 || "Activity",
             desc: c2,
             note: c3,
             img: c4,
@@ -368,17 +539,9 @@
       return parsed;
     }
 
-    function getTagColor(act) {
-      let a = (act || "").toLowerCase();
-      if (a.includes("flight") || a.includes("transfer") || a.includes("train") || a.includes("bus")) return "var(--tag-flight)";
-      if (a.includes("lunch") || a.includes("dinner")) return "var(--tag-food)";
-      if (a.includes("hotel") || a.includes("check-in") || a.includes("refresh")) return "var(--tag-hotel)";
-      return "var(--tag-sight)";
-    }
-
     function renderUI() {
       const tabsBar = document.getElementById("tabsList");
-      const cardContainer = document.getElementById("timelineCards");
+      const cardContainer = document.getElementById("travelCardList");
       const bannerTitle = document.getElementById("dayFullTitle");
       const banner = document.getElementById("dayBanner");
 
@@ -386,23 +549,46 @@
 
       if (!tripData || tripData.length === 0) {
         banner.style.display = "none";
-        cardContainer.innerHTML = `<div class="loading-msg">Đang đồng bộ dữ liệu từ Excel...</div>`;
+        cardContainer.innerHTML = `<div class="loading-msg">Preparing itinerary...</div>`;
         return;
       }
 
       banner.style.display = "block";
 
+      let activeTabElement = null;
+
       tripData.forEach((day, idx) => {
-        const btn = document.createElement("button");
-        btn.className = `tab-item ${idx === activeIndex ? "active" : ""}`;
-        btn.innerText = day.tab;
-        btn.onclick = () => {
+        const tabBtn = document.createElement("div");
+        const isActive = (idx === activeIndex);
+        tabBtn.className = `tab-card ${isActive ? "active" : ""}`;
+        
+        const dateHtml = day.tabDate ? `<span class="tab-date-label">${day.tabDate}</span>` : "";
+        tabBtn.innerHTML = `
+          <span class="tab-day-label">${day.tabDay}</span>
+          ${dateHtml}
+        `;
+        
+        tabBtn.onclick = () => {
           activeIndex = idx;
           renderUI();
-          btn.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
         };
-        tabsBar.appendChild(btn);
+        tabsBar.appendChild(tabBtn);
+
+        if (isActive) {
+          activeTabElement = tabBtn;
+        }
       });
+
+      // Smooth auto-shift tabs to the left so next days (e.g. Day 6-9) are immediately visible
+      if (activeTabElement) {
+        setTimeout(() => {
+          activeTabElement.scrollIntoView({
+            behavior: 'smooth',
+            inline: 'start',
+            block: 'nearest'
+          });
+        }, 50);
+      }
 
       const activeDay = tripData[activeIndex];
       if (activeDay) {
@@ -411,40 +597,50 @@
 
         activeDay.items.forEach(item => {
           const card = document.createElement("div");
-          card.className = "card";
-          const tagColor = getTagColor(item.activity);
-          const timeHtml = item.time ? `<span class="card-time">${item.time}</span>` : `<span class="card-time">Trong ngày</span>`;
-          const badgeHtml = `<span class="badge" style="background:${tagColor}">${item.activity}</span>`;
+          card.className = "travel-card";
+
+          const displayTime = item.time ? `⏰ ${item.time}` : `⏰ All Day`;
+
+          const timeBadgeHtml = `
+            <div class="time-badge-wrapper">
+              <span class="soft-time-badge">${displayTime}</span>
+            </div>
+          `;
+
+          let mediaHtml = "";
+          if (item.img) {
+            mediaHtml = `
+              <div class="card-media">
+                <img src="${item.img}" loading="lazy" alt="${item.activity}" />
+              </div>
+            `;
+          }
 
           const descHtml = item.desc ? `<div class="card-desc">${item.desc}</div>` : "";
 
-          let noteHtml = "";
+          let linkPill = "";
           if (item.note) {
             if (item.link) {
               let validLink = item.link.trim();
               if (!validLink.startsWith("http://") && !validLink.startsWith("https://")) {
                 validLink = "https://" + validLink;
               }
-              noteHtml = `<div class="card-note"><a href="${validLink}" target="_blank" rel="noopener noreferrer">${item.note} ↗</a></div>`;
+              linkPill = `<a href="${validLink}" target="_blank" rel="noopener noreferrer" class="pill-link">📍 ${item.note} ↗</a>`;
             } else {
-              noteHtml = `<div class="card-note">${item.note}</div>`;
+              linkPill = `<span class="pill-note-only">📍 ${item.note}</span>`;
             }
           }
 
-          let imgHtml = "";
-          if (item.img) {
-            imgHtml = `<div class="card-img-wrapper"><img src="${item.img}" class="card-img" /></div>`;
-          }
+          const pillsContainerHtml = linkPill ? `<div class="meta-pills">${linkPill}</div>` : "";
 
           card.innerHTML = `
-            <div class="card-head">
-              ${timeHtml}
-              ${badgeHtml}
+            ${timeBadgeHtml}
+            ${mediaHtml}
+            <div class="card-body">
+              <div class="card-title">${item.activity}</div>
+              ${descHtml}
+              ${pillsContainerHtml}
             </div>
-            <div class="card-name">${item.activity}</div>
-            ${descHtml}
-            ${noteHtml}
-            ${imgHtml}
           `;
           cardContainer.appendChild(card);
         });
