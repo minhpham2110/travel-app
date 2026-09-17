@@ -83,7 +83,7 @@
       position: sticky;
       top: 0;
       z-index: 100;
-      padding: calc(env(safe-area-inset-top, 20px) + 8px) 14px 10px;
+      padding: calc(env(safe-area-inset-top, 20px) + 8px) 14px 6px;
       background: rgba(242, 245, 248, 0.75);
       backdrop-filter: blur(28px) saturate(190%);
       -webkit-backdrop-filter: blur(28px) saturate(190%);
@@ -163,12 +163,46 @@
       background: var(--primary-soft);
     }
 
+    /* Countdown Pill Banner */
+    .countdown-wrapper {
+      padding: 4px 14px 8px;
+      max-width: 520px;
+      margin: 0 auto;
+    }
+    .countdown-card {
+      background: var(--liquid-glass-bg);
+      border: 1px solid var(--liquid-glass-border);
+      box-shadow: var(--liquid-glass-shadow);
+      border-radius: 16px;
+      padding: 8px 14px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+    }
+    .countdown-left {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      font-size: 11.5px;
+      font-weight: 600;
+      color: var(--text-sub);
+    }
+    .countdown-timer {
+      font-size: 12.5px;
+      font-weight: 700;
+      color: var(--primary);
+      letter-spacing: 0.3px;
+      font-variant-numeric: tabular-nums;
+    }
+
     /* iOS Segmented Track Tabs */
     .tabs-bar-wrapper {
       position: sticky;
-      top: calc(env(safe-area-inset-top, 20px) + 68px);
+      top: calc(env(safe-area-inset-top, 20px) + 64px);
       z-index: 99;
-      padding: 6px 14px 10px;
+      padding: 4px 14px 10px;
       background: rgba(242, 245, 248, 0.75);
       backdrop-filter: blur(28px) saturate(190%);
       -webkit-backdrop-filter: blur(28px) saturate(190%);
@@ -237,7 +271,7 @@
     .content-box { 
       max-width: 520px; 
       margin: 0 auto; 
-      padding: 10px 14px; 
+      padding: 8px 14px; 
     }
 
     .day-banner {
@@ -251,7 +285,7 @@
       line-height: 1.4; 
     }
 
-    /* iOS Liquid Glass Travel Card */
+    /* Travel Card */
     .travel-card {
       background: var(--liquid-glass-bg);
       border-radius: 26px;
@@ -360,13 +394,6 @@
       padding: 6px 14px;
       border-radius: 14px;
     }
-
-    .loading-msg {
-      text-align: center;
-      padding: 60px 20px;
-      color: var(--text-sub);
-      font-size: 14px;
-    }
   </style>
 </head>
 <body>
@@ -381,12 +408,23 @@
       <div class="header-actions">
         <div class="sync-pill" id="syncStatus">
           <span class="status-dot"></span>
-          <span id="syncStatusText">Loading...</span>
+          <span id="syncStatusText">Ready</span>
         </div>
         <button class="refresh-btn" onclick="syncOnline(true)">Sync ⟳</button>
       </div>
     </div>
   </header>
+
+  <!-- Live Countdown Banner -->
+  <div class="countdown-wrapper">
+    <div class="countdown-card">
+      <div class="countdown-left">
+        <span>✈️</span>
+        <span id="countdownLabel">Departure in:</span>
+      </div>
+      <div class="countdown-timer" id="countdownValue">--d --h --m --s</div>
+    </div>
+  </div>
 
   <!-- Segmented Tabs -->
   <div class="tabs-bar-wrapper">
@@ -403,18 +441,43 @@
 
   <script>
     const LOCAL_FILE = "./japantour.xlsx";
-    const SHAREPOINT_FILE = "https://bscvn-my.sharepoint.com/:x:/g/personal/minhpq_bsc_com_vn/IQCHNDjCKlC5S4w9i-w0x3OiAVVX9bXIhQsYTux5-12K7tg?e=Pbu1oa&download=1";
     const CACHE_KEY = "japan_trip_last_saved_note_v1";
     const TIME_KEY = "japan_trip_last_sync_time_v1";
+
+    const DEPARTURE_DATE = new Date("2026-11-27T00:00:00+07:00").getTime();
 
     let tripData = [];
     let activeIndex = 0;
 
+    function initCountdown() {
+      const timerEl = document.getElementById("countdownValue");
+      const labelEl = document.getElementById("countdownLabel");
+
+      function updateTimer() {
+        const now = new Date().getTime();
+        const diff = DEPARTURE_DATE - now;
+
+        if (diff <= 0) {
+          labelEl.innerText = "Tour Status:";
+          timerEl.innerText = "🌸 In Japan Underway!";
+          return;
+        }
+
+        const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+        const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+        const mins = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+        const secs = Math.floor((diff % (1000 * 60)) / 1000);
+
+        timerEl.innerText = `${days}d • ${String(hours).padStart(2, '0')}:${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
+      }
+
+      updateTimer();
+      setInterval(updateTimer, 1000);
+    }
+
     function formatCurrentTime() {
       const now = new Date();
-      const h = String(now.getHours()).padStart(2, '0');
-      const m = String(now.getMinutes()).padStart(2, '0');
-      return `${h}:${m}`;
+      return `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
     }
 
     function setStatus(text, isReady = true) {
@@ -425,17 +488,20 @@
     }
 
     function init() {
+      initCountdown();
+      
+      // Load cache ngay lập tức để render siêu tốc (<0.1s)
       const cached = localStorage.getItem(CACHE_KEY);
       const lastTime = localStorage.getItem(TIME_KEY);
       if (cached) {
         try { 
           tripData = JSON.parse(cached); 
           setStatus(lastTime ? `Updated ${lastTime}` : "Updated", true);
-        } catch(e) { 
-          tripData = []; 
-        }
+          renderUI();
+        } catch(e) {}
       }
-      renderUI();
+      
+      // Đồng bộ ngầm trong nền
       syncOnline(false);
     }
 
@@ -444,17 +510,10 @@
 
       let arrayBuffer = null;
       try {
-        let res = await fetch(LOCAL_FILE);
+        // Thêm timestamp chống browser cache file excel
+        let res = await fetch(`${LOCAL_FILE}?t=${Date.now()}`);
         if (res.ok) arrayBuffer = await res.arrayBuffer();
       } catch (e) {}
-
-      if (!arrayBuffer) {
-        try {
-          let proxy = "https://api.allorigins.win/raw?url=" + encodeURIComponent(SHAREPOINT_FILE);
-          let res = await fetch(proxy);
-          if (res.ok) arrayBuffer = await res.arrayBuffer();
-        } catch (e) {}
-      }
 
       if (arrayBuffer) {
         try {
@@ -499,14 +558,10 @@
       let dayDate = "";
 
       let dayMatch = headerText.match(/Day\s*(\d+)/i) || headerText.match(/Ngày\s*(\d+)/i);
-      if (dayMatch) {
-        dayName = `Day ${dayMatch[1]}`;
-      }
+      if (dayMatch) dayName = `Day ${dayMatch[1]}`;
 
       let dateMatch = headerText.match(/(\d{1,2}\/\d{1,2})/);
-      if (dateMatch) {
-        dayDate = dateMatch[1];
-      }
+      if (dateMatch) dayDate = dateMatch[1];
 
       return { dayName, dayDate };
     }
@@ -517,12 +572,12 @@
       let dayCount = 0;
 
       rows.forEach(r => {
-        const c0 = String(r[0] || "").trim(); // Time
-        const c1 = String(r[1] || "").trim(); // Activity
-        const c2 = String(r[2] || "").trim(); // Description
-        const c3 = String(r[3] || "").trim(); // Note
-        const c4 = String(r[4] || "").trim(); // Image
-        const c5 = String(r[5] || "").trim(); // Link
+        const c0 = String(r[0] || "").trim();
+        const c1 = String(r[1] || "").trim();
+        const c2 = String(r[2] || "").trim();
+        const c3 = String(r[3] || "").trim();
+        const c4 = String(r[4] || "").trim();
+        const c5 = String(r[5] || "").trim();
 
         if (!c0 && !c1 && !c2 && !c3) return;
         if (c0.toLowerCase() === "time" && c1.toLowerCase() === "activity") return;
@@ -556,7 +611,7 @@
       return parsed;
     }
 
-    // Auto-Scroll Logic
+    // Auto-Scroll Logic: Day 1-4 locked left, Day 5-6 shift, Day 7-9 locked right
     function scrollToActiveTab(idx) {
       const tabsBar = document.getElementById("tabsList");
       if (!tabsBar || !tabsBar.children || tabsBar.children.length <= idx) return;
@@ -564,13 +619,10 @@
       if (!targetElement) return;
 
       if (idx <= 3) {
-        // Day 1 to Day 4: Lock scroll to the start so Day 1 - 4 are 100% visible
         tabsBar.scrollTo({ left: 0, behavior: 'smooth' });
       } else if (idx >= tripData.length - 3) {
-        // Day 7 to Day 9: Slide all the way right so Day 9 is fully in view
         tabsBar.scrollTo({ left: tabsBar.scrollWidth, behavior: 'smooth' });
       } else {
-        // Day 5 & Day 6: Shift so active tab is at the beginning, revealing Day 6 - 9 immediately
         const offset = targetElement.offsetLeft - tabsBar.offsetLeft - 8;
         tabsBar.scrollTo({ left: Math.max(0, offset), behavior: 'smooth' });
       }
@@ -586,7 +638,7 @@
 
       if (!tripData || tripData.length === 0) {
         banner.style.display = "none";
-        cardContainer.innerHTML = `<div class="loading-msg">Preparing itinerary...</div>`;
+        cardContainer.innerHTML = `<div style="text-align:center;padding:60px 20px;color:var(--text-sub);font-size:14px;">Preparing itinerary...</div>`;
         return;
       }
 
@@ -610,7 +662,6 @@
         tabsBar.appendChild(tabBtn);
       });
 
-      // Trigger bidirectional scroll right after DOM paint
       requestAnimationFrame(() => {
         setTimeout(() => {
           scrollToActiveTab(activeIndex);
@@ -638,7 +689,7 @@
           if (item.img) {
             mediaHtml = `
               <div class="card-media">
-                <img src="${item.img}" loading="lazy" alt="${item.activity}" />
+                <img src="${item.img}" loading="lazy" decoding="async" alt="${item.activity}" />
               </div>
             `;
           }
